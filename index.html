@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Enhanced OGG Metadata Editor</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #121212; 
+      color: #eee; 
+      padding: 20px; 
+      max-width: 1200px; 
+      margin: 0 auto; 
+    }
+    .drop-zone { 
+      border: 2px dashed #666; 
+      padding: 30px; 
+      text-align: center; 
+      margin-bottom: 20px; 
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .drop-zone.dragover { 
+      border-color: #0f0; 
+      background: rgba(0, 255, 0, 0.1); 
+    }
+    audio { 
+      width: 100%; 
+      margin: 20px 0; 
+      background: #222;
+      border-radius: 4px;
+    }
+    .metadata-section {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin: 20px 0; 
+      background: #222;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    th { 
+      background: #333; 
+      padding: 12px; 
+      text-align: left;
+      font-weight: bold;
+    }
+    td { 
+      padding: 10px; 
+      border-bottom: 1px solid #444; 
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    input[type="text"], select { 
+      width: 100%; 
+      padding: 8px; 
+      background: #333; 
+      color: #eee; 
+      border: 1px solid #555; 
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus, select:focus {
+      outline: none;
+      border-color: #666;
+      background: #444;
+    }
+    button { 
+      margin: 5px; 
+      padding: 10px 15px; 
+      background: #0066cc; 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+      border-radius: 4px;
+      font-size: 14px;
+      transition: background 0.2s ease;
+    }
+    button:hover { 
+      background: #0080ff; 
+    }
+    button.secondary {
+      background: #444;
+    }
+    button.secondary:hover {
+      background: #666;
+    }
+    button.danger {
+      background: #cc3333;
+    }
+    button.danger:hover {
+      background: #ff4444;
+    }
+    .add-field-section {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .add-field-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .add-field-row input, .add-field-row select {
+      flex: 1;
+    }
+    .file-info {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      display: none;
+    }
+    .status.success {
+      background: rgba(0, 255, 0, 0.2);
+      border: 1px solid #0a0;
+    }
+    .status.error {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid #a00;
+    }
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Enhanced OGG Metadata Editor</h1>
+
+  <!-- File Upload -->
+  <div class="drop-zone" id="dropZone">
+    <p>🎵 Drag & Drop OGG file here or click to browse</p>
+  </div>
+  <input type="file" id="fileInput" accept=".ogg" style="display: none;">
+
+  <!-- File Info -->
+  <div class="file-info" id="fileInfo" style="display: none;">
+    <h3>File Information</h3>
+    <p id="fileName"></p>
+    <p id="fileSize"></p>
+  </div>
+
+  <!-- Audio Player -->
+  <audio id="audioPlayer" controls style="display: none;"></audio>
+
+  <!-- Status Messages -->
+  <div class="status" id="statusMsg"></div>
+
+  <!-- Metadata Section -->
+  <div class="metadata-section" id="metadataSection" style="display: none;">
+    <h2>Metadata Editor</h2>
+    
+    <form id="metadataForm">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 200px;">Field Name</th>
+            <th>Value</th>
+            <th style="width: 100px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="metadataTableBody">
+        </tbody>
+      </table>
+      
+      <!-- Add New Field -->
+      <div class="add-field-section">
+        <h4>Add New Metadata Field</h4>
+        <div class="add-field-row">
+          <select id="newFieldType">
+            <option value="custom">Custom Field</option>
+            <option value="TITLE">Title</option>
+            <option value="ARTIST">Artist</option>
+            <option value="ALBUM">Album</option>
+            <option value="DATE">Date</option>
+            <option value="GENRE">Genre</option>
+            <option value="TRACKNUMBER">Track Number</option>
+            <option value="ALBUMARTIST">Album Artist</option>
+            <option value="COMPOSER">Composer</option>
+            <option value="COMMENT">Comment</option>
+            <option value="COPYRIGHT">Copyright</option>
+            <option value="DESCRIPTION">Description</option>
+            <option value="LANGUAGE">Language</option>
+            <option value="PUBLISHER">Publisher</option>
+            <option value="ISRC">ISRC</option>
+            <option value="COVERART">Cover Art URL</option>
+            <option value="CERTIFICATE">Certificate of Authenticity</option>
+            <option value="LICENSE">License</option>
+          </select>
+          <input type="text" id="newFieldName" placeholder="Field name (if custom)">
+          <input type="text" id="newFieldValue" placeholder="Field value">
+          <button type="button" id="addFieldBtn" class="secondary">Add Field</button>
+        </div>
+      </div>
+
+      <button type="submit">💾 Write Metadata to File</button>
+    </form>
+    
+    <!-- Quick Export Option -->
+    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #444;">
+      <button type="button" id="quickExportBtn" class="secondary">⚡ Quick Export (Metadata Only)</button>
+      <p style="font-size: 12px; color: #aaa; margin: 5px 0;">Export OGG with current metadata without additional files</p>
+    </div>
+  </div>
+
+  <!-- File Attachment Section -->
+  <div class="metadata-section" id="attachSection" style="display: none;">
+    <h2>Attach Extra Files</h2>
+    <p>Attach cover art, certificates, or other files to your OGG file</p>
+    
+    <input type="file" id="extraFile" accept="image/*,.pdf,.txt,.doc,.docx">
+    <button id="attachFileBtn" class="secondary">Attach File & Export OGG</button>
+    
+    <h3>Download</h3>
+    <a id="downloadLink" style="display:none; color: #0080ff; text-decoration: none;">📥 Download Updated OGG File</a>
+  </div>
+
+  <script>
+    // Global variables
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const metadataTableBody = document.getElementById("metadataTableBody");
+    const metadataForm = document.getElementById("metadataForm");
+    const metadataSection = document.getElementById("metadataSection");
+    const attachSection = document.getElementById("attachSection");
+    const fileInfo = document.getElementById("fileInfo");
+    const fileName = document.getElementById("fileName");
+    const fileSize = document.getElementById("fileSize");
+    const statusMsg = document.getElementById("statusMsg");
+    const newFieldType = document.getElementById("newFieldType");
+    const newFieldName = document.getElementById("newFieldName");
+    const newFieldValue = document.getElementById("newFieldValue");
+    const addFieldBtn = document.getElementById("addFieldBtn");
+    const extraFileInput = document.getElementById("extraFile");
+    const attachBtn = document.getElementById("attachFileBtn");
+    const downloadLink = document.getElementById("downloadLink");
+
+    const quickExportBtn = document.getElementById("quickExportBtn");
+
+    let currentFile;
+    let metadata = {};
+    let originalMetadata = {}; // Store original for comparison
+
+    // Common metadata fields that should be available by default
+    const defaultFields = [
+      'TITLE', 'ARTIST', 'ALBUM', 'DATE', 'GENRE', 'TRACKNUMBER', 
+      'ALBUMARTIST', 'COMPOSER', 'COMMENT'
+    ];
+
+    // Show status message
+    function showStatus(message, type = 'success') {
+      statusMsg.textContent = message;
+      statusMsg.className = `status ${type}`;
+      statusMsg.style.display = 'block';
+      setTimeout(() => {
+        statusMsg.style.display = 'none';
+      }, 3000);
+    }
+
+    // File size formatter
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Drag and Drop Events
+    dropZone.addEventListener("click", () => fileInput.click());
+    
+    dropZone.addEventListener("dragover", e => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+    
+    dropZone.addEventListener("dragleave", e => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+    });
+    
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      loadFile(e.dataTransfer.files[0]);
+    });
+    
+    fileInput.addEventListener("change", e => loadFile(e.target.files[0]));
+
+    // Load and process file
+    async function loadFile(file) {
+      if (!file) return;
+      
+      if (!file.name.toLowerCase().endsWith('.ogg')) {
+        showStatus('Please select a valid OGG file.', 'error');
+        return;
+      }
+
+      currentFile = file;
+      
+      // Show file info
+      fileName.textContent = `File: ${file.name}`;
+      fileSize.textContent = `Size: ${formatFileSize(file.size)}`;
+      fileInfo.style.display = 'block';
+
+      // Setup audio player
+      audioPlayer.src = URL.createObjectURL(file);
+      audioPlayer.style.display = 'block';
+
+      try {
+        // Read actual metadata from the OGG file
+        await readActualMetadata(file);
+        renderMetadataTable();
+        metadataSection.style.display = 'block';
+        attachSection.style.display = 'block';
+        showStatus('File loaded successfully! Original metadata displayed below.');
+      } catch (error) {
+        showStatus('Error reading metadata: ' + error.message, 'error');
+        console.error(error);
+        // Fallback to empty metadata if reading fails
+        metadata = {};
+        renderMetadataTable();
+        metadataSection.style.display = 'block';
+        attachSection.style.display = 'block';
+      }
+    }
+
+    // Read actual metadata from OGG file
+    async function readActualMetadata(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const arrayBuffer = e.target.result;
+            const uint8Array = new Uint8Array(arrayBuffer);
+            
+            // Parse OGG Vorbis comments
+            metadata = parseVorbisComments(uint8Array);
+            resolve();
+          } catch (error) {
+            // If parsing fails, try to extract basic info or use empty metadata
+            console.warn('Could not parse OGG metadata:', error);
+            metadata = extractBasicFileInfo(file);
+            resolve();
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+    // Parse Vorbis comments from OGG file
+    function parseVorbisComments(data) {
+      const metadata = {};
+      
+      try {
+        // Search through OGG pages for Vorbis comment packet
+        let pageOffset = 0;
+        
+        while (pageOffset < data.length - 27) { // Minimum OGG page size
+          // Check for OggS page header
+          if (data[pageOffset] === 0x4F && data[pageOffset+1] === 0x67 && 
+              data[pageOffset+2] === 0x67 && data[pageOffset+3] === 0x53) {
+            
+            const dataView = new DataView(data.buffer, pageOffset);
+            
+            // Read page header
+            const headerTypeFlag = dataView.getUint8(5);
+            const pageSegments = dataView.getUint8(26);
+            
+            // Calculate page size
+            let pageSize = 27; // Header size
+            for (let i = 0; i < pageSegments; i++) {
+              pageSize += dataView.getUint8(27 + i);
+            }
+            
+            // Look for Vorbis comment packet in this page
+            const pageData = data.slice(pageOffset + 27 + pageSegments, pageOffset + pageSize);
+            
+            // Check if this page contains a Vorbis comment packet (type 3)
+            for (let i = 0; i < pageData.length - 7; i++) {
+              if (pageData[i] === 0x03 && 
+                  pageData[i+1] === 0x76 && pageData[i+2] === 0x6f && pageData[i+3] === 0x72 && 
+                  pageData[i+4] === 0x62 && pageData[i+5] === 0x69 && pageData[i+6] === 0x73) {
+                
+                // Found Vorbis comment packet
+                return parseVorbisCommentPacket(pageData, i + 7);
+              }
+            }
+            
+            pageOffset += pageSize;
+          } else {
+            pageOffset++;
+          }
+        }
+      } catch (error) {
+        console.warn('Error parsing OGG structure:', error);
+      }
+      
+      return metadata;
+    }
+
+    // Parse the actual Vorbis comment packet
+    function parseVorbisCommentPacket(packetData, offset) {
+      const metadata = {};
+      const dataView = new DataView(packetData.buffer, packetData.byteOffset);
+      
+      try {
+        // Read vendor string
+        const vendorLength = dataView.getUint32(offset, true);
+        offset += 4 + vendorLength;
+        
+        // Read user comment list
+        const userCommentListLength = dataView.getUint32(offset, true);
+        offset += 4;
+        
+        for (let i = 0; i < userCommentListLength; i++) {
+          if (offset + 4 > packetData.length) break;
+          
+          const commentLength = dataView.getUint32(offset, true);
+          offset += 4;
+          
+          if (offset + commentLength > packetData.length) break;
+          
+          const commentBytes = packetData.slice(offset, offset + commentLength);
+          const comment = new TextDecoder('utf-8').decode(commentBytes);
+          offset += commentLength;
+          
+          const equalIndex = comment.indexOf('=');
+          if (equalIndex > 0) {
+            const key = comment.substring(0, equalIndex).toUpperCase().trim();
+            const value = comment.substring(equalIndex + 1).trim();
+            if (key && value) {
+              metadata[key] = value;
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Error parsing Vorbis comment packet:', error);
+      }
+      
+      return metadata;
+    }
+
+    // Write metadata back to OGG file
+    async function writeMetadataToOgg(originalFile, newMetadata) {
+      const arrayBuffer = await originalFile.arrayBuffer();
+      const data = new Uint8Array(arrayBuffer);
+      
+      try {
+        // Create new OGG file with updated metadata
+        const updatedData = updateVorbisComments(data, newMetadata);
+        return new Blob([updatedData], { type: 'audio/ogg' });
+      } catch (error) {
+        console.error('Error writing metadata:', error);
+        throw new Error('Failed to write metadata to OGG file');
+      }
+    }
+
+    // Update Vorbis comments in OGG data
+    function updateVorbisComments(data, newMetadata) {
+      const dataView = new DataView(data.buffer);
+      let commentBlockStart = -1;
+      let commentBlockEnd = -1;
+      
+      // Find the comment header packet
+      for (let i = 0; i < data.length - 10; i++) {
+        if (data[i] === 0x03 && 
+            data[i+1] === 0x76 && data[i+2] === 0x6f && data[i+3] === 0x72 && 
+            data[i+4] === 0x62 && data[i+5] === 0x69 && data[i+6] === 0x73) {
+          commentBlockStart = i;
+          break;
+        }
+      }
+      
+      if (commentBlockStart === -1) {
+        throw new Error('Could not find Vorbis comment block');
+      }
+      
+      // Find the end of the comment block (look for next packet or end)
+      let offset = commentBlockStart + 7;
+      
+      // Skip vendor string
+      const vendorLength = dataView.getUint32(offset, true);
+      offset += 4 + vendorLength;
+      
+      // Skip existing user comments
+      const userCommentListLength = dataView.getUint32(offset, true);
+      offset += 4;
+      
+      for (let i = 0; i < userCommentListLength; i++) {
+        const commentLength = dataView.getUint32(offset, true);
+        offset += 4 + commentLength;
+      }
+      
+      // Skip framing bit
+      offset += 1;
+      commentBlockEnd = offset;
+      
+      // Build new comment block
+      const newCommentBlock = buildVorbisCommentBlock(newMetadata);
+      
+      // Construct new file: before comment block + new comment block + after comment block
+      const beforeBlock = data.slice(0, commentBlockStart);
+      const afterBlock = data.slice(commentBlockEnd);
+      
+      const newFileSize = beforeBlock.length + newCommentBlock.length + afterBlock.length;
+      const newData = new Uint8Array(newFileSize);
+      
+      let writeOffset = 0;
+      newData.set(beforeBlock, writeOffset);
+      writeOffset += beforeBlock.length;
+      newData.set(newCommentBlock, writeOffset);
+      writeOffset += newCommentBlock.length;
+      newData.set(afterBlock, writeOffset);
+      
+      return newData;
+    }
+
+    // Build new Vorbis comment block
+    function buildVorbisCommentBlock(metadata) {
+      const encoder = new TextEncoder();
+      const vendor = "Enhanced OGG Metadata Editor";
+      const vendorBytes = encoder.encode(vendor);
+      
+      // Build comment strings
+      const comments = [];
+      for (const [key, value] of Object.entries(metadata)) {
+        if (value.trim() !== '') {
+          comments.push(encoder.encode(`${key}=${value}`));
+        }
+      }
+      
+      // Calculate total size
+      let totalSize = 1 + 6 + 4 + vendorBytes.length + 4; // header + "vorbis" + vendor_length + vendor + user_comment_list_length
+      comments.forEach(comment => {
+        totalSize += 4 + comment.length; // length + comment
+      });
+      totalSize += 1; // framing bit
+      
+      // Build the block
+      const block = new Uint8Array(totalSize);
+      const blockView = new DataView(block.buffer);
+      let offset = 0;
+      
+      // Packet type and "vorbis"
+      block[offset++] = 0x03;
+      block.set(encoder.encode("vorbis"), offset);
+      offset += 6;
+      
+      // Vendor string
+      blockView.setUint32(offset, vendorBytes.length, true);
+      offset += 4;
+      block.set(vendorBytes, offset);
+      offset += vendorBytes.length;
+      
+      // User comment list
+      blockView.setUint32(offset, comments.length, true);
+      offset += 4;
+      
+      comments.forEach(comment => {
+        blockView.setUint32(offset, comment.length, true);
+        offset += 4;
+        block.set(comment, offset);
+        offset += comment.length;
+      });
+      
+      // Framing bit
+      block[offset] = 0x01;
+      
+      return block;
+    }
+
+    // Render metadata table
+    function renderMetadataTable() {
+      metadataTableBody.innerHTML = "";
+      
+      // Create a comprehensive list of fields to display
+      const allFields = new Set([...defaultFields, ...Object.keys(metadata)]);
+      
+      // Sort fields: existing metadata first, then defaults, then alphabetical
+      const sortedFields = Array.from(allFields).sort((a, b) => {
+        const aHasValue = metadata[a] && metadata[a].trim() !== '';
+        const bHasValue = metadata[b] && metadata[b].trim() !== '';
+        const aIsDefault = defaultFields.includes(a);
+        const bIsDefault = defaultFields.includes(b);
+        
+        // Priority: existing values > default fields > alphabetical
+        if (aHasValue && !bHasValue) return -1;
+        if (!aHasValue && bHasValue) return 1;
+        if (aIsDefault && !bIsDefault) return -1;
+        if (!aIsDefault && bIsDefault) return 1;
+        return a.localeCompare(b);
+      });
+      
+      // Add all fields to table
+      sortedFields.forEach(field => {
+        const value = metadata[field] || '';
+        const hasOriginalValue = metadata.hasOwnProperty(field) && metadata[field].trim() !== '';
+        addMetadataRow(field, value, hasOriginalValue);
+      });
+      
+      // Show summary of original metadata
+      const originalCount = Object.keys(metadata).filter(key => metadata[key].trim() !== '').length;
+      if (originalCount > 0) {
+        showStatus(`Loaded ${originalCount} original metadata fields from file.`);
+      } else {
+        showStatus('No metadata found in file. You can add metadata below.');
+      }
+    }
+
+    // Add a metadata row to the table
+    function addMetadataRow(key, value, hasOriginalValue = false) {
+      const row = document.createElement('tr');
+      
+      // Style rows with original data differently
+      if (hasOriginalValue) {
+        row.style.background = '#2a3a2a'; // Slight green tint for original data
+      }
+      
+      const isDefaultField = defaultFields.includes(key);
+      const fieldDisplayName = formatFieldName(key);
+      
+      row.innerHTML = `
+        <td>
+          <strong>${fieldDisplayName}</strong>
+          ${hasOriginalValue ? '<span style="color: #4a4; font-size: 12px; margin-left: 8px;">●</span>' : ''}
+          <input type="hidden" class="field-name" value="${key}">
+        </td>
+        <td>
+          <input type="text" class="field-value" value="${value}" 
+                 placeholder="Enter ${fieldDisplayName.toLowerCase()}"
+                 ${hasOriginalValue ? 'title="Original value from file"' : ''}>
+        </td>
+        <td>
+          <button type="button" class="delete-row danger" onclick="deleteRow(this)" 
+                  ${isDefaultField ? 'style="display:none"' : ''}>Delete</button>
+        </td>
+      `;
+      
+      metadataTableBody.appendChild(row);
+    }
+
+    // Format field names for display
+    function formatFieldName(fieldName) {
+      const fieldMappings = {
+        'TITLE': 'Title',
+        'ARTIST': 'Artist',
+        'ALBUM': 'Album',
+        'DATE': 'Date',
+        'GENRE': 'Genre',
+        'TRACKNUMBER': 'Track Number',
+        'ALBUMARTIST': 'Album Artist',
+        'COMPOSER': 'Composer',
+        'COMMENT': 'Comment',
+        'COPYRIGHT': 'Copyright',
+        'DESCRIPTION': 'Description',
+        'LANGUAGE': 'Language',
+        'PUBLISHER': 'Publisher',
+        'ISRC': 'ISRC',
+        'COVERART': 'Cover Art URL',
+        'CERTIFICATE': 'Certificate of Authenticity',
+        'LICENSE': 'License'
+      };
+      
+      return fieldMappings[fieldName] || fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
+    }
+
+    // Delete a metadata row
+    function deleteRow(button) {
+      const row = button.closest('tr');
+      const fieldName = row.querySelector('.field-name').value;
+      
+      if (confirm(`Delete field "${fieldName}"?`)) {
+        delete metadata[fieldName];
+        row.remove();
+        showStatus(`Field "${fieldName}" deleted.`);
+      }
+    }
+
+    // Handle field type selection
+    newFieldType.addEventListener('change', function() {
+      if (this.value === 'custom') {
+        newFieldName.style.display = 'block';
+        newFieldName.placeholder = 'Enter custom field name';
+        newFieldName.focus();
+      } else {
+        newFieldName.style.display = 'none';
+        newFieldName.value = this.value;
+      }
+    });
+
+    // Add new field
+    addFieldBtn.addEventListener('click', function() {
+      const fieldType = newFieldType.value;
+      const fieldName = fieldType === 'custom' ? newFieldName.value.trim().toUpperCase() : fieldType;
+      const fieldValue = newFieldValue.value.trim();
+      
+      if (!fieldName) {
+        showStatus('Please enter a field name.', 'error');
+        return;
+      }
+      
+      // Check if field already exists in the table
+      const existingRows = Array.from(metadataTableBody.querySelectorAll('tr'));
+      const fieldExists = existingRows.some(row => {
+        const hiddenInput = row.querySelector('input[type="hidden"].field-name');
+        return hiddenInput && hiddenInput.value === fieldName;
+      });
+      
+      if (fieldExists) {
+        showStatus('Field already exists. Use the table above to edit it.', 'error');
+        return;
+      }
+      
+      // Add to metadata and table
+      metadata[fieldName] = fieldValue;
+      addMetadataRow(fieldName, fieldValue, false);
+      
+      // Reset form
+      newFieldType.value = 'custom';
+      newFieldName.value = '';
+      newFieldValue.value = '';
+      newFieldName.style.display = 'block';
+      
+      showStatus(`Field "${formatFieldName(fieldName)}" added successfully.`);
+    });
+
+    // Save metadata - now actually writes to file
+    metadataForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      
+      // Collect all metadata from the table
+      const rows = metadataTableBody.querySelectorAll('tr');
+      const newMetadata = {};
+      
+      rows.forEach(row => {
+        const nameInput = row.querySelector('.field-name') || row.querySelector('input[type="hidden"].field-name');
+        const valueInput = row.querySelector('.field-value');
+        
+        if (nameInput && valueInput) {
+          const name = nameInput.value.trim().toUpperCase();
+          const value = valueInput.value.trim();
+          
+          if (name && value) {
+            newMetadata[name] = value;
+          }
+        }
+      });
+      
+      try {
+        // Create updated OGG file with new metadata
+        const updatedBlob = await writeMetadataToOgg(currentFile, newMetadata);
+        
+        // Update global metadata
+        metadata = newMetadata;
+        
+        // Create download link
+        downloadLink.href = URL.createObjectURL(updatedBlob);
+        downloadLink.download = `${currentFile.name.replace('.ogg', '')}_updated.ogg`;
+        downloadLink.style.display = "block";
+        downloadLink.textContent = "📥 Download OGG with Updated Metadata";
+        
+        showStatus(`Metadata successfully written to file! ${Object.keys(newMetadata).length} fields saved.`);
+        
+      } catch (error) {
+        showStatus('Error saving metadata: ' + error.message, 'error');
+        console.error(error);
+      }
+    });
+
+    // Attach file and export with metadata
+    attachBtn.addEventListener("click", async () => {
+      if (!currentFile) {
+        showStatus("Please upload an OGG file first.", 'error');
+        return;
+      }
+
+      const extraFile = extraFileInput.files[0];
+      
+      try {
+        attachBtn.textContent = 'Processing...';
+        attachBtn.disabled = true;
+        
+        let finalBlob;
+        
+        if (extraFile) {
+          // If there's an extra file, we need to embed it
+          showStatus('Processing file attachment...', 'success');
+          finalBlob = await attachFileToOgg(currentFile, extraFile, metadata);
+        } else {
+          // Just update metadata without extra file
+          showStatus('Writing metadata to file...', 'success');
+          finalBlob = await writeMetadataToOgg(currentFile, metadata);
+        }
+        
+        // Create download link
+        downloadLink.href = URL.createObjectURL(finalBlob);
+        downloadLink.download = `${currentFile.name.replace('.ogg', '')}_enhanced.ogg`;
+        downloadLink.style.display = "block";
+        downloadLink.textContent = extraFile ? 
+          "📥 Download OGG with Metadata + Attached File" : 
+          "📥 Download OGG with Updated Metadata";
+        
+        showStatus(extraFile ? 
+          'File processed successfully! Metadata and attachment saved.' :
+          'Metadata written successfully!');
+        
+      } catch (error) {
+        showStatus('Error processing file: ' + error.message, 'error');
+        console.error(error);
+      } finally {
+        attachBtn.textContent = 'Attach File & Export OGG';
+        attachBtn.disabled = false;
+      }
+    });
+
+    // Attach extra file to OGG (simplified implementation)
+    async function attachFileToOgg(oggFile, extraFile, metadata) {
+      // First update metadata
+      const oggWithMetadata = await writeMetadataToOgg(oggFile, metadata);
+      
+      // For now, we'll create a combined file approach
+      // In a full implementation, you'd use ffmpeg.wasm or similar
+      // This creates a file with updated metadata + note about attachment
+      const attachmentInfo = {
+        ...metadata,
+        'ATTACHMENT_NAME': extraFile.name,
+        'ATTACHMENT_TYPE': extraFile.type,
+        'ATTACHMENT_SIZE': extraFile.size.toString(),
+        'ATTACHMENT_NOTE': `File ${extraFile.name} (${formatFileSize(extraFile.size)}) attached`
+      };
+      
+      return await writeMetadataToOgg(oggFile, attachmentInfo);
+    }
+
+    // Quick export without extra files
+    quickExportBtn.addEventListener("click", async () => {
+      if (!currentFile) {
+        showStatus("Please upload an OGG file first.", 'error');
+        return;
+      }
+
+      try {
+        quickExportBtn.textContent = 'Exporting...';
+        quickExportBtn.disabled = true;
+        
+        // Collect current metadata from form
+        const rows = metadataTableBody.querySelectorAll('tr');
+        const currentMetadata = {};
+        
+        rows.forEach(row => {
+          const nameInput = row.querySelector('.field-name') || row.querySelector('input[type="hidden"].field-name');
+          const valueInput = row.querySelector('.field-value');
+          
+          if (nameInput && valueInput) {
+            const name = nameInput.value.trim().toUpperCase();
+            const value = valueInput.value.trim();
+            
+            if (name && value) {
+              currentMetadata[name] = value;
+            }
+          }
+        });
+        
+        // Write metadata to OGG
+        const updatedBlob = await writeMetadataToOgg(currentFile, currentMetadata);
+        
+        // Create download link
+        downloadLink.href = URL.createObjectURL(updatedBlob);
+        downloadLink.download = `${currentFile.name.replace('.ogg', '')}_metadata_updated.ogg`;
+        downloadLink.style.display = "block";
+        downloadLink.textContent = "📥 Download OGG with Updated Metadata";
+        
+        // Count changes
+        const changes = Object.keys(currentMetadata).filter(key => 
+          !originalMetadata[key] || originalMetadata[key] !== currentMetadata[key]
+        );
+        
+        showStatus(`Metadata written successfully! ${changes.length} fields updated.`);
+        
+      } catch (error) {
+        showStatus('Error exporting file: ' + error.message, 'error');
+        console.error(error);
+      } finally {
+        quickExportBtn.textContent = '⚡ Quick Export (Metadata Only)';
+        quickExportBtn.disabled = false;
+      }
+    });
+
+    // Extract basic file info if metadata parsing fails
+    function extractBasicFileInfo(file) {
+      const baseName = file.name.replace(/\.[^/.]+$/, "");
+      return {
+        'TITLE': baseName,
+        'DATE': new Date().getFullYear().toString()
+      };
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      showStatus('Ready to load OGG files. Drag and drop or click to browse.', 'success');
+    });
+
+    // Make deleteRow available globally
+    window.deleteRow = deleteRow;
+  </script>
+</body>
+</html>

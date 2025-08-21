@@ -19,6 +19,7 @@
       margin-bottom: 20px; 
       border-radius: 8px;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
     .drop-zone.dragover { 
       border-color: #0f0; 
@@ -140,6 +141,15 @@
       font-weight: bold;
       margin-right: 8px;
     }
+    .metadata-item .key {
+      font-weight: bold;
+      min-width: 120px;
+      color: #0080ff;
+    }
+    .metadata-item .value {
+      color: #ccc;
+      word-break: break-all;
+    }
     .status {
       padding: 10px;
       margin: 10px 0;
@@ -154,130 +164,26 @@
       background: rgba(255, 0, 0, 0.2);
       border: 1px solid #a00;
     }
-    .loading {
-      opacity: 0.6;
-      pointer-events: none;
+    .status.show {
+      display: block;
     }
-    .file-input-wrapper {
-      position: relative;
-      display: inline-block;
-      width: 100%;
+    .original-field {
+      background: rgba(0, 255, 0, 0.05);
+      border-left: 3px solid #4a4;
     }
-    .file-input-wrapper input[type="file"] {
-      opacity: 0;
-      position: absolute;
-      z-index: -1;
-    }
-    .file-input-display {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      background: #333;
-      border: 1px solid #555;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .file-input-display:hover {
-      background: #444;
-    }
-    .file-input-display .icon {
-      margin-right: 8px;
+    .added-field {
+      background: rgba(0, 128, 255, 0.05);
+      border-left: 3px solid #0080ff;
     }
 
-    /* Popup styles */
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    .popup-content {
-      background: #1a1a1a;
-      border-radius: 12px;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow: auto;
-      position: relative;
-      border: 1px solid #444;
-    }
-    .popup-header {
-      background: #333;
-      padding: 20px;
-      border-radius: 12px 12px 0 0;
-      border-bottom: 1px solid #444;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .popup-close {
-      background: #cc3333;
-      border: none;
-      color: white;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .popup-close:hover {
-      background: #ff4444;
-    }
-    .popup-body {
-      padding: 20px;
-    }
-    .media-section {
-      margin: 20px 0;
-    }
-    .media-section h4 {
-      color: #0080ff;
-      margin-bottom: 10px;
-      border-bottom: 1px solid #444;
-      padding-bottom: 5px;
-    }
-    .media-item {
-      background: #333;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #555;
-    }
-    .media-item img {
-      max-width: 100%;
-      max-height: 300px;
-      object-fit: contain;
-      border-radius: 4px;
-    }
-    .media-item video {
-      max-width: 100%;
-      max-height: 300px;
-      border-radius: 4px;
-    }
-    .metadata-table {
-      width: 100%;
-      background: #333;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .metadata-table th {
-      background: #444;
-      padding: 10px;
-      text-align: left;
-    }
-    .metadata-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid #555;
-    }
-    .metadata-table tr:last-child td {
-      border-bottom: none;
+    @media (max-width: 768px) {
+      .file-info-grid {
+        grid-template-columns: 1fr;
+      }
+      .add-field-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
     }
   </style>
 </head>
@@ -298,10 +204,9 @@
         <h4>Basic Info</h4>
         <p id="fileName"></p>
         <p id="fileSize"></p>
-        <button id="viewFileBtn" class="secondary">🎵 View File & Media</button>
       </div>
       <div class="file-metadata-list">
-        <h4>Metadata Found</h4>
+        <h4>Metadata Found (<span id="metadataCount">0</span> fields)</h4>
         <div id="metadataFound">
           <p style="color: #888;">Loading metadata...</p>
         </div>
@@ -337,30 +242,10 @@
         <h4>Add New Metadata Field</h4>
         <div class="add-field-row">
           <select id="newFieldType">
-            <option value="custom">Custom Field</option>
-            <option value="TITLE">Title</option>
-            <option value="ARTIST">Artist</option>
-            <option value="ALBUM">Album</option>
-            <option value="DATE">Date</option>
-            <option value="GENRE">Genre</option>
-            <option value="TRACKNUMBER">Track Number</option>
-            <option value="ALBUMARTIST">Album Artist</option>
-            <option value="COMPOSER">Composer</option>
-            <option value="COMMENT">Comment</option>
-            <option value="COPYRIGHT">Copyright</option>
-            <option value="DESCRIPTION">Description</option>
-            <option value="LANGUAGE">Language</option>
-            <option value="PUBLISHER">Publisher</option>
-            <option value="ISRC">ISRC</option>
-            <option value="COVERART">Cover Art URL</option>
-            <option value="CERTIFICATE">Certificate of Authenticity</option>
-            <option value="LICENSE">License</option>
-            <option value="ATTACHMENT">File Attachment</option>
+            <option value="">Select a field to add...</option>
           </select>
-          <input type="text" id="newFieldName" placeholder="Field name (if custom)">
-          <div id="fieldValueContainer">
-            <input type="text" id="newFieldValue" placeholder="Field value">
-          </div>
+          <input type="text" id="newFieldName" placeholder="Field name (if custom)" style="display: none;">
+          <input type="text" id="newFieldValue" placeholder="Field value">
           <button type="button" id="addFieldBtn" class="secondary">Add Field</button>
         </div>
       </div>
@@ -371,42 +256,7 @@
     <!-- Download Section -->
     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #444;">
       <h3>Download</h3>
-      <a id="downloadLink" style="display:none; color: #0080ff; text-decoration: none;">📥 Download Updated OGG File</a>
-    </div>
-  </div>
-
-  <!-- Popup for viewing file and media -->
-  <div class="popup-overlay" id="popupOverlay">
-    <div class="popup-content">
-      <div class="popup-header">
-        <h3>File Viewer & Media</h3>
-        <button class="popup-close" id="popupClose">&times;</button>
-      </div>
-      <div class="popup-body">
-        <div class="media-section">
-          <h4>Audio File</h4>
-          <audio id="popupAudio" controls style="width: 100%; background: #333; border-radius: 4px;"></audio>
-        </div>
-        
-        <div class="media-section" id="attachedMediaSection" style="display: none;">
-          <h4>Attached Media</h4>
-          <div id="attachedMediaContainer"></div>
-        </div>
-        
-        <div class="media-section">
-          <h4>All Metadata</h4>
-          <table class="metadata-table">
-            <thead>
-              <tr>
-                <th>Field</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody id="popupMetadataBody">
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <a id="downloadLink" style="display:none; color: #0080ff; text-decoration: none;">📥 Download Metadata File</a>
     </div>
   </div>
 
@@ -425,38 +275,61 @@
     const newFieldType = document.getElementById("newFieldType");
     const newFieldName = document.getElementById("newFieldName");
     const newFieldValue = document.getElementById("newFieldValue");
-    const fieldValueContainer = document.getElementById("fieldValueContainer");
     const addFieldBtn = document.getElementById("addFieldBtn");
     const downloadLink = document.getElementById("downloadLink");
     const metadataFound = document.getElementById("metadataFound");
-    const viewFileBtn = document.getElementById("viewFileBtn");
-    
-    // Popup elements
-    const popupOverlay = document.getElementById("popupOverlay");
-    const popupClose = document.getElementById("popupClose");
-    const popupAudio = document.getElementById("popupAudio");
-    const attachedMediaSection = document.getElementById("attachedMediaSection");
-    const attachedMediaContainer = document.getElementById("attachedMediaContainer");
-    const popupMetadataBody = document.getElementById("popupMetadataBody");
+    const metadataCount = document.getElementById("metadataCount");
 
     let currentFile;
     let metadata = {};
-    let originalMetadata = {}; // Store original for comparison
-    let attachedFiles = {}; // Store any attached files
+    let originalMetadata = {};
+    let addedFields = new Set();
 
-    // Common metadata fields that should be available by default
-    const defaultFields = [
-      'TITLE', 'ARTIST', 'ALBUM', 'DATE', 'GENRE', 'TRACKNUMBER', 
-      'ALBUMARTIST', 'COMPOSER', 'COMMENT'
-    ];
+    // Field definitions
+    const fieldDefinitions = {
+      'TITLE': { name: 'Title', type: 'text' },
+      'ARTIST': { name: 'Artist', type: 'text' },
+      'ALBUM': { name: 'Album', type: 'text' },
+      'DATE': { name: 'Date', type: 'text' },
+      'GENRE': { name: 'Genre', type: 'text' },
+      'TRACKNUMBER': { name: 'Track Number', type: 'text' },
+      'ALBUMARTIST': { name: 'Album Artist', type: 'text' },
+      'COMPOSER': { name: 'Composer', type: 'text' },
+      'PERFORMER': { name: 'Performer', type: 'text' },
+      'COMMENT': { name: 'Comment', type: 'text' },
+      'DESCRIPTION': { name: 'Description', type: 'text' },
+      'COPYRIGHT': { name: 'Copyright', type: 'text' },
+      'LICENSE': { name: 'License', type: 'text' },
+      'LANGUAGE': { name: 'Language', type: 'text' },
+      'PUBLISHER': { name: 'Publisher', type: 'text' },
+      'ISRC': { name: 'ISRC', type: 'text' },
+      'DISCNUMBER': { name: 'Disc Number', type: 'text' },
+      'LABEL': { name: 'Label', type: 'text' },
+      'CONDUCTOR': { name: 'Conductor', type: 'text' },
+      'LYRICIST': { name: 'Lyricist', type: 'text' },
+      'PRODUCER': { name: 'Producer', type: 'text' },
+      'ARRANGER': { name: 'Arranger', type: 'text' },
+      'ENGINEER': { name: 'Engineer', type: 'text' },
+      'MIXER': { name: 'Mixer', type: 'text' },
+      'ORGANIZATION': { name: 'Organization', type: 'text' },
+      'LOCATION': { name: 'Location', type: 'text' },
+      'CONTACT': { name: 'Contact', type: 'text' },
+      'VERSION': { name: 'Version', type: 'text' },
+      'SUBTITLE': { name: 'Subtitle', type: 'text' }
+    };
+
+    // Valid metadata field patterns
+    const VALID_FIELD_PATTERN = /^[A-Z][A-Z0-9_]*$/;
+    const MIN_FIELD_LENGTH = 2;
+    const MAX_FIELD_LENGTH = 50;
+    const MAX_VALUE_LENGTH = 1000;
 
     // Show status message
     function showStatus(message, type = 'success') {
       statusMsg.textContent = message;
-      statusMsg.className = `status ${type}`;
-      statusMsg.style.display = 'block';
+      statusMsg.className = `status ${type} show`;
       setTimeout(() => {
-        statusMsg.style.display = 'none';
+        statusMsg.classList.remove('show');
       }, 3000);
     }
 
@@ -467,6 +340,63 @@
       const sizes = ['Bytes', 'KB', 'MB', 'GB'];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Validate metadata field
+    function isValidMetadataField(key, value) {
+      if (!key || !value) return false;
+      
+      // Check field name format
+      if (!VALID_FIELD_PATTERN.test(key)) return false;
+      if (key.length < MIN_FIELD_LENGTH || key.length > MAX_FIELD_LENGTH) return false;
+      
+      // Check value length
+      if (value.length > MAX_VALUE_LENGTH) return false;
+      
+      // Check if value contains only printable characters
+      if (!/^[\x20-\x7E\u00A0-\uFFFF]*$/.test(value)) return false;
+      
+      // Exclude common binary or corrupted patterns
+      if (value.includes('\x00') || value.includes('\uFFFD')) return false;
+      if (/^[\x00-\x1F]*$/.test(value)) return false; // Only control characters
+      
+      return true;
+    }
+
+    // Clean and filter metadata
+    function cleanMetadata(rawMetadata) {
+      const cleaned = {};
+      
+      for (const [key, value] of Object.entries(rawMetadata)) {
+        const cleanKey = key.trim().toUpperCase();
+        const cleanValue = value.trim();
+        
+        if (isValidMetadataField(cleanKey, cleanValue)) {
+          cleaned[cleanKey] = cleanValue;
+        }
+      }
+      
+      return cleaned;
+    }
+
+    // Update available fields dropdown
+    function updateAvailableFields() {
+      newFieldType.innerHTML = '<option value="">Select a field to add...</option>';
+      
+      for (const [key, def] of Object.entries(fieldDefinitions)) {
+        if (!metadata.hasOwnProperty(key)) {
+          const option = document.createElement('option');
+          option.value = key;
+          option.textContent = def.name;
+          newFieldType.appendChild(option);
+        }
+      }
+      
+      // Add custom option
+      const customOption = document.createElement('option');
+      customOption.value = 'custom';
+      customOption.textContent = 'Custom Field';
+      newFieldType.appendChild(customOption);
     }
 
     // Drag and Drop Events
@@ -500,6 +430,7 @@
       }
 
       currentFile = file;
+      addedFields.clear();
       
       // Show file info
       fileName.textContent = `File: ${file.name}`;
@@ -515,15 +446,17 @@
         await readActualMetadata(file);
         updateMetadataFoundDisplay();
         renderMetadataTable();
+        updateAvailableFields();
         metadataSection.style.display = 'block';
-        showStatus('File loaded successfully! Original metadata displayed below.');
+        showStatus(`File loaded successfully! Found ${Object.keys(metadata).length} metadata fields.`);
       } catch (error) {
         showStatus('Error reading metadata: ' + error.message, 'error');
         console.error(error);
-        // Fallback to empty metadata if reading fails
-        metadata = {};
+        // Fallback to basic file info
+        metadata = extractBasicFileInfo(file);
         updateMetadataFoundDisplay();
         renderMetadataTable();
+        updateAvailableFields();
         metadataSection.style.display = 'block';
       }
     }
@@ -531,23 +464,25 @@
     // Update metadata found display
     function updateMetadataFoundDisplay() {
       const foundFields = Object.keys(metadata).filter(key => metadata[key].trim() !== '');
+      metadataCount.textContent = foundFields.length;
       
       if (foundFields.length === 0) {
-        metadataFound.innerHTML = '<p style="color: #888;">No metadata found in file</p>';
+        metadataFound.innerHTML = '<p style="color: #888;">No valid metadata found in file</p>';
         return;
       }
       
       const html = foundFields.map(field => 
         `<div class="metadata-item">
           <span class="checkmark">✓</span>
-          <span>${formatFieldName(field)}: ${metadata[field].substring(0, 50)}${metadata[field].length > 50 ? '...' : ''}</span>
+          <span class="key">${formatFieldName(field)}:</span>
+          <span class="value">${metadata[field].substring(0, 100)}${metadata[field].length > 100 ? '...' : ''}</span>
         </div>`
       ).join('');
       
       metadataFound.innerHTML = html;
     }
 
-    // Read actual metadata from OGG file
+    // Read and parse OGG metadata with improved filtering
     async function readActualMetadata(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -556,12 +491,16 @@
             const arrayBuffer = e.target.result;
             const uint8Array = new Uint8Array(arrayBuffer);
             
-            // Parse OGG Vorbis comments
-            metadata = parseVorbisComments(uint8Array);
+            // Parse OGG Vorbis comments with better filtering
+            const rawMetadata = parseVorbisComments(uint8Array);
+            metadata = cleanMetadata(rawMetadata);
             originalMetadata = {...metadata};
+            
+            // Mark existing fields as added
+            Object.keys(metadata).forEach(key => addedFields.add(key));
+            
             resolve();
           } catch (error) {
-            // If parsing fails, try to extract basic info or use empty metadata
             console.warn('Could not parse OGG metadata:', error);
             metadata = extractBasicFileInfo(file);
             originalMetadata = {...metadata};
@@ -573,292 +512,181 @@
       });
     }
 
-    // Parse Vorbis comments from OGG file
+    // Improved Vorbis comment parser with better validation
     function parseVorbisComments(data) {
-      const metadata = {};
+      const rawMetadata = {};
       
       try {
-        // Search through OGG pages for Vorbis comment packet
-        let pageOffset = 0;
+        // Convert to string for searching, but be careful with encoding
+        const searchData = data.slice(0, Math.min(data.length, 50000)); // Limit search area
         
-        while (pageOffset < data.length - 27) { // Minimum OGG page size
-          // Check for OggS page header
-          if (data[pageOffset] === 0x4F && data[pageOffset+1] === 0x67 && 
-              data[pageOffset+2] === 0x67 && data[pageOffset+3] === 0x53) {
+        // Look for Vorbis comment header more precisely
+        for (let i = 0; i < searchData.length - 10; i++) {
+          // Look for the pattern: packet_type(1) + "vorbis"(6)
+          if (searchData[i] === 0x03 && 
+              searchData[i+1] === 0x76 && searchData[i+2] === 0x6f && 
+              searchData[i+3] === 0x72 && searchData[i+4] === 0x62 && 
+              searchData[i+5] === 0x69 && searchData[i+6] === 0x73) {
             
-            const dataView = new DataView(data.buffer, pageOffset);
-            
-            // Read page header
-            const headerTypeFlag = dataView.getUint8(5);
-            const pageSegments = dataView.getUint8(26);
-            
-            // Calculate page size
-            let pageSize = 27; // Header size
-            for (let i = 0; i < pageSegments; i++) {
-              pageSize += dataView.getUint8(27 + i);
-            }
-            
-            // Look for Vorbis comment packet in this page
-            const pageData = data.slice(pageOffset + 27 + pageSegments, pageOffset + pageSize);
-            
-            // Check if this page contains a Vorbis comment packet (type 3)
-            for (let i = 0; i < pageData.length - 7; i++) {
-              if (pageData[i] === 0x03 && 
-                  pageData[i+1] === 0x76 && pageData[i+2] === 0x6f && pageData[i+3] === 0x72 && 
-                  pageData[i+4] === 0x62 && pageData[i+5] === 0x69 && pageData[i+6] === 0x73) {
-                
-                // Found Vorbis comment packet
-                return parseVorbisCommentPacket(pageData, i + 7);
-              }
-            }
-            
-            pageOffset += pageSize;
-          } else {
-            pageOffset++;
+            // Found Vorbis comment header, parse from here
+            const commentData = data.slice(i + 7);
+            return extractVorbisComments(commentData);
           }
         }
+        
+        // Fallback: look for key=value patterns in a safer way
+        return extractKeyValuePairs(data);
+        
       } catch (error) {
-        console.warn('Error parsing OGG structure:', error);
+        console.warn('Error parsing Vorbis comments:', error);
+        return {};
       }
-      
-      return metadata;
     }
 
-    // Parse the actual Vorbis comment packet
-    function parseVorbisCommentPacket(packetData, offset) {
+    // Extract Vorbis comments from comment packet
+    function extractVorbisComments(data) {
       const metadata = {};
-      const dataView = new DataView(packetData.buffer, packetData.byteOffset);
       
       try {
-        // Read vendor string
+        let offset = 0;
+        const dataView = new DataView(data.buffer, data.byteOffset);
+        
+        // Skip vendor string
+        if (offset + 4 > data.length) return metadata;
         const vendorLength = dataView.getUint32(offset, true);
         offset += 4 + vendorLength;
         
         // Read user comment list
+        if (offset + 4 > data.length) return metadata;
         const userCommentListLength = dataView.getUint32(offset, true);
         offset += 4;
         
-        for (let i = 0; i < userCommentListLength; i++) {
-          if (offset + 4 > packetData.length) break;
-          
+        for (let i = 0; i < userCommentListLength && offset < data.length - 4; i++) {
           const commentLength = dataView.getUint32(offset, true);
           offset += 4;
           
-          if (offset + commentLength > packetData.length) break;
-          
-          const commentBytes = packetData.slice(offset, offset + commentLength);
-          const comment = new TextDecoder('utf-8').decode(commentBytes);
-          offset += commentLength;
-          
-          const equalIndex = comment.indexOf('=');
-          if (equalIndex > 0) {
-            const key = comment.substring(0, equalIndex).toUpperCase().trim();
-            const value = comment.substring(equalIndex + 1).trim();
-            if (key && value) {
-              metadata[key] = value;
-            }
+          if (offset + commentLength > data.length || commentLength > 1000) {
+            break; // Prevent reading beyond bounds or unreasonably long comments
           }
+          
+          try {
+            const commentBytes = data.slice(offset, offset + commentLength);
+            const comment = new TextDecoder('utf-8', {fatal: true}).decode(commentBytes);
+            
+            const equalIndex = comment.indexOf('=');
+            if (equalIndex > 0 && equalIndex < comment.length - 1) {
+              const key = comment.substring(0, equalIndex).trim().toUpperCase();
+              const value = comment.substring(equalIndex + 1).trim();
+              
+              if (key.length >= MIN_FIELD_LENGTH && key.length <= MAX_FIELD_LENGTH && 
+                  value.length > 0 && value.length <= MAX_VALUE_LENGTH) {
+                metadata[key] = value;
+              }
+            }
+          } catch (decodeError) {
+            // Skip invalid UTF-8 sequences
+            console.warn('Skipping invalid UTF-8 comment');
+          }
+          
+          offset += commentLength;
         }
+        
       } catch (error) {
-        console.warn('Error parsing Vorbis comment packet:', error);
+        console.warn('Error extracting Vorbis comments:', error);
       }
       
       return metadata;
     }
 
-    // Write metadata back to OGG file
-    async function writeMetadataToOgg(originalFile, newMetadata) {
-      const arrayBuffer = await originalFile.arrayBuffer();
-      const data = new Uint8Array(arrayBuffer);
+    // Fallback key-value extraction with strict validation
+    function extractKeyValuePairs(data) {
+      const metadata = {};
       
       try {
-        // Create new OGG file with updated metadata
-        const updatedData = updateVorbisComments(data, newMetadata);
-        return new Blob([updatedData], { type: 'audio/ogg' });
+        // Convert to string but handle encoding carefully
+        const textData = new TextDecoder('utf-8', {fatal: false}).decode(data.slice(0, 10000));
+        
+        // Look for patterns that look like metadata
+        const keyValueRegex = /([A-Z][A-Z0-9_]{1,49})=([^\x00-\x1F\x7F-\x9F]{1,200})/g;
+        let match;
+        
+        while ((match = keyValueRegex.exec(textData)) !== null && Object.keys(metadata).length < 50) {
+          const key = match[1].trim();
+          const value = match[2].trim();
+          
+          // Additional validation
+          if (isValidMetadataField(key, value)) {
+            metadata[key] = value;
+          }
+        }
+        
       } catch (error) {
-        console.error('Error writing metadata:', error);
-        throw new Error('Failed to write metadata to OGG file');
-      }
-    }
-
-    // Update Vorbis comments in OGG data
-    function updateVorbisComments(data, newMetadata) {
-      const dataView = new DataView(data.buffer);
-      let commentBlockStart = -1;
-      let commentBlockEnd = -1;
-      
-      // Find the comment header packet
-      for (let i = 0; i < data.length - 10; i++) {
-        if (data[i] === 0x03 && 
-            data[i+1] === 0x76 && data[i+2] === 0x6f && data[i+3] === 0x72 && 
-            data[i+4] === 0x62 && data[i+5] === 0x69 && data[i+6] === 0x73) {
-          commentBlockStart = i;
-          break;
-        }
+        console.warn('Error in fallback key-value extraction:', error);
       }
       
-      if (commentBlockStart === -1) {
-        throw new Error('Could not find Vorbis comment block');
-      }
-      
-      // Find the end of the comment block (look for next packet or end)
-      let offset = commentBlockStart + 7;
-      
-      // Skip vendor string
-      const vendorLength = dataView.getUint32(offset, true);
-      offset += 4 + vendorLength;
-      
-      // Skip existing user comments
-      const userCommentListLength = dataView.getUint32(offset, true);
-      offset += 4;
-      
-      for (let i = 0; i < userCommentListLength; i++) {
-        const commentLength = dataView.getUint32(offset, true);
-        offset += 4 + commentLength;
-      }
-      
-      // Skip framing bit
-      offset += 1;
-      commentBlockEnd = offset;
-      
-      // Build new comment block
-      const newCommentBlock = buildVorbisCommentBlock(newMetadata);
-      
-      // Construct new file: before comment block + new comment block + after comment block
-      const beforeBlock = data.slice(0, commentBlockStart);
-      const afterBlock = data.slice(commentBlockEnd);
-      
-      const newFileSize = beforeBlock.length + newCommentBlock.length + afterBlock.length;
-      const newData = new Uint8Array(newFileSize);
-      
-      let writeOffset = 0;
-      newData.set(beforeBlock, writeOffset);
-      writeOffset += beforeBlock.length;
-      newData.set(newCommentBlock, writeOffset);
-      writeOffset += newCommentBlock.length;
-      newData.set(afterBlock, writeOffset);
-      
-      return newData;
-    }
-
-    // Build new Vorbis comment block
-    function buildVorbisCommentBlock(metadata) {
-      const encoder = new TextEncoder();
-      const vendor = "Enhanced OGG Metadata Editor";
-      const vendorBytes = encoder.encode(vendor);
-      
-      // Build comment strings
-      const comments = [];
-      for (const [key, value] of Object.entries(metadata)) {
-        if (value.trim() !== '') {
-          comments.push(encoder.encode(`${key}=${value}`));
-        }
-      }
-      
-      // Calculate total size
-      let totalSize = 1 + 6 + 4 + vendorBytes.length + 4; // header + "vorbis" + vendor_length + vendor + user_comment_list_length
-      comments.forEach(comment => {
-        totalSize += 4 + comment.length; // length + comment
-      });
-      totalSize += 1; // framing bit
-      
-      // Build the block
-      const block = new Uint8Array(totalSize);
-      const blockView = new DataView(block.buffer);
-      let offset = 0;
-      
-      // Packet type and "vorbis"
-      block[offset++] = 0x03;
-      block.set(encoder.encode("vorbis"), offset);
-      offset += 6;
-      
-      // Vendor string
-      blockView.setUint32(offset, vendorBytes.length, true);
-      offset += 4;
-      block.set(vendorBytes, offset);
-      offset += vendorBytes.length;
-      
-      // User comment list
-      blockView.setUint32(offset, comments.length, true);
-      offset += 4;
-      
-      comments.forEach(comment => {
-        blockView.setUint32(offset, comment.length, true);
-        offset += 4;
-        block.set(comment, offset);
-        offset += comment.length;
-      });
-      
-      // Framing bit
-      block[offset] = 0x01;
-      
-      return block;
+      return metadata;
     }
 
     // Render metadata table
     function renderMetadataTable() {
       metadataTableBody.innerHTML = "";
       
-      // Create a comprehensive list of fields to display
-      const allFields = new Set([...defaultFields, ...Object.keys(metadata)]);
+      // Get all fields (existing + standard ones)
+      const allFields = new Set([...Object.keys(fieldDefinitions), ...Object.keys(metadata)]);
       
-      // Sort fields: existing metadata first, then defaults, then alphabetical
+      // Sort fields: existing metadata first, then standard fields
       const sortedFields = Array.from(allFields).sort((a, b) => {
         const aHasValue = metadata[a] && metadata[a].trim() !== '';
         const bHasValue = metadata[b] && metadata[b].trim() !== '';
-        const aIsDefault = defaultFields.includes(a);
-        const bIsDefault = defaultFields.includes(b);
+        const aIsStandard = fieldDefinitions.hasOwnProperty(a);
+        const bIsStandard = fieldDefinitions.hasOwnProperty(b);
         
-        // Priority: existing values > default fields > alphabetical
         if (aHasValue && !bHasValue) return -1;
         if (!aHasValue && bHasValue) return 1;
-        if (aIsDefault && !bIsDefault) return -1;
-        if (!aIsDefault && bIsDefault) return 1;
+        if (aIsStandard && !bIsStandard) return -1;
+        if (!aIsStandard && bIsStandard) return 1;
         return a.localeCompare(b);
       });
       
       // Add all fields to table
       sortedFields.forEach(field => {
         const value = metadata[field] || '';
-        const hasOriginalValue = metadata.hasOwnProperty(field) && metadata[field].trim() !== '';
-        addMetadataRow(field, value, hasOriginalValue);
+        const hasOriginalValue = originalMetadata.hasOwnProperty(field) && originalMetadata[field].trim() !== '';
+        const isAdded = addedFields.has(field) && !hasOriginalValue;
+        addMetadataRow(field, value, hasOriginalValue, isAdded);
       });
-      
-      // Show summary of original metadata
-      const originalCount = Object.keys(metadata).filter(key => metadata[key].trim() !== '').length;
-      if (originalCount > 0) {
-        showStatus(`Loaded ${originalCount} original metadata fields from file.`);
-      } else {
-        showStatus('No metadata found in file. You can add metadata below.');
-      }
     }
 
     // Add a metadata row to the table
-    function addMetadataRow(key, value, hasOriginalValue = false) {
+    function addMetadataRow(key, value, hasOriginalValue = false, isAdded = false) {
       const row = document.createElement('tr');
       
-      // Style rows with original data differently
+      // Style rows differently based on source
       if (hasOriginalValue) {
-        row.style.background = '#2a3a2a'; // Slight green tint for original data
+        row.className = 'original-field';
+      } else if (isAdded) {
+        row.className = 'added-field';
       }
       
-      const isDefaultField = defaultFields.includes(key);
       const fieldDisplayName = formatFieldName(key);
+      const isStandardField = fieldDefinitions.hasOwnProperty(key);
       
       row.innerHTML = `
         <td>
           <strong>${fieldDisplayName}</strong>
-          ${hasOriginalValue ? '<span style="color: #4a4; font-size: 12px; margin-left: 8px;">●</span>' : ''}
+          ${hasOriginalValue ? '<span style="color: #4a4; font-size: 12px; margin-left: 8px;" title="Original metadata">●</span>' : ''}
+          ${isAdded ? '<span style="color: #0080ff; font-size: 12px; margin-left: 8px;" title="Added field">+</span>' : ''}
           <input type="hidden" class="field-name" value="${key}">
         </td>
         <td>
           <input type="text" class="field-value" value="${value}" 
                  placeholder="Enter ${fieldDisplayName.toLowerCase()}"
+                 maxlength="${MAX_VALUE_LENGTH}"
                  ${hasOriginalValue ? 'title="Original value from file"' : ''}>
         </td>
         <td>
           <button type="button" class="delete-row danger" onclick="deleteRow(this)" 
-                  ${isDefaultField ? 'style="display:none"' : ''}>Delete</button>
+                  ${isStandardField && !hasOriginalValue && !isAdded ? 'style="display:none"' : ''}>Delete</button>
         </td>
       `;
       
@@ -867,166 +695,114 @@
 
     // Format field names for display
     function formatFieldName(fieldName) {
-      const fieldMappings = {
-        'TITLE': 'Title',
-        'ARTIST': 'Artist',
-        'ALBUM': 'Album',
-        'DATE': 'Date',
-        'GENRE': 'Genre',
-        'TRACKNUMBER': 'Track Number',
-        'ALBUMARTIST': 'Album Artist',
-        'COMPOSER': 'Composer',
-        'COMMENT': 'Comment',
-        'COPYRIGHT': 'Copyright',
-        'DESCRIPTION': 'Description',
-        'LANGUAGE': 'Language',
-        'PUBLISHER': 'Publisher',
-        'ISRC': 'ISRC',
-        'COVERART': 'Cover Art URL',
-        'CERTIFICATE': 'Certificate of Authenticity',
-        'LICENSE': 'License',
-        'ATTACHMENT': 'File Attachment'
-      };
+      if (fieldDefinitions[fieldName]) {
+        return fieldDefinitions[fieldName].name;
+      }
       
-      return fieldMappings[fieldName] || fieldName.charAt(0).toUpperCase() + fieldName.slice(1).toLowerCase();
+      // Convert UPPERCASE_FIELD to Title Case
+      return fieldName.split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
     }
 
     // Delete a metadata row
-    function deleteRow(button) {
+    window.deleteRow = function(button) {
       const row = button.closest('tr');
       const fieldName = row.querySelector('.field-name').value;
       
-      if (confirm(`Delete field "${fieldName}"?`)) {
+      if (confirm(`Delete field "${formatFieldName(fieldName)}"?`)) {
         delete metadata[fieldName];
+        addedFields.delete(fieldName);
         row.remove();
-        showStatus(`Field "${fieldName}" deleted.`);
         updateMetadataFoundDisplay();
+        updateAvailableFields();
+        showStatus(`Field "${formatFieldName(fieldName)}" deleted.`);
       }
-    }
+    };
 
     // Handle field type selection
     newFieldType.addEventListener('change', function() {
-      if (this.value === 'custom') {
+      const fieldType = this.value;
+      
+      if (fieldType === 'custom') {
         newFieldName.style.display = 'block';
-        newFieldName.placeholder = 'Enter custom field name';
-        fieldValueContainer.innerHTML = '<input type="text" id="newFieldValue" placeholder="Field value">';
+        newFieldName.placeholder = 'Enter custom field name (UPPERCASE)';
         newFieldName.focus();
-      } else if (this.value === 'ATTACHMENT') {
-        newFieldName.style.display = 'none';
-        newFieldName.value = this.value;
-        // Create file input for attachments
-        fieldValueContainer.innerHTML = `
-          <div class="file-input-wrapper">
-            <input type="file" id="newFileAttachment" accept="image/*,video/*,audio/*,.pdf,.txt,.doc,.docx">
-            <div class="file-input-display" onclick="document.getElementById('newFileAttachment').click()">
-              <span class="icon">📎</span>
-              <span id="fileDisplayName">Choose file to attach...</span>
-            </div>
-          </div>
-        `;
-        
-        // Handle file selection
-        const fileInput = document.getElementById('newFileAttachment');
-        const displayName = document.getElementById('fileDisplayName');
-        fileInput.addEventListener('change', function() {
-          if (this.files[0]) {
-            displayName.textContent = this.files[0].name;
-          }
-        });
       } else {
         newFieldName.style.display = 'none';
-        newFieldName.value = this.value;
-        fieldValueContainer.innerHTML = '<input type="text" id="newFieldValue" placeholder="Field value">';
+        newFieldName.value = fieldType;
       }
     });
 
     // Add new field
-    addFieldBtn.addEventListener('click', async function() {
+    addFieldBtn.addEventListener('click', function() {
       const fieldType = newFieldType.value;
-      const fieldName = fieldType === 'custom' ? newFieldName.value.trim().toUpperCase() : fieldType;
-      let fieldValue = '';
       
-      if (fieldType === 'ATTACHMENT') {
-        const fileInput = document.getElementById('newFileAttachment');
-        if (!fileInput.files[0]) {
-          showStatus('Please select a file to attach.', 'error');
+      if (!fieldType) {
+        showStatus('Please select a field type.', 'error');
+        return;
+      }
+      
+      let fieldName = '';
+      const fieldValue = newFieldValue.value.trim();
+      
+      if (!fieldValue) {
+        showStatus('Please enter a field value.', 'error');
+        return;
+      }
+      
+      if (fieldType === 'custom') {
+        fieldName = newFieldName.value.trim().toUpperCase();
+        
+        if (!fieldName) {
+          showStatus('Please enter a field name.', 'error');
           return;
         }
         
-        const file = fileInput.files[0];
+        if (!VALID_FIELD_PATTERN.test(fieldName)) {
+          showStatus('Field name must contain only letters, numbers, and underscores, starting with a letter.', 'error');
+          return;
+        }
         
-        // Convert file to base64 for storage in metadata
-        try {
-          const base64Data = await fileToBase64(file);
-          fieldValue = `${file.name}|${file.type}|${file.size}|${base64Data}`;
-          
-          // Store the actual file for later use
-          attachedFiles[fieldName + '_' + Date.now()] = {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            data: base64Data
-          };
-          
-        } catch (error) {
-          showStatus('Error processing file: ' + error.message, 'error');
+        if (fieldName.length < MIN_FIELD_LENGTH || fieldName.length > MAX_FIELD_LENGTH) {
+          showStatus(`Field name must be between ${MIN_FIELD_LENGTH} and ${MAX_FIELD_LENGTH} characters.`, 'error');
           return;
         }
       } else {
-        const valueInput = document.getElementById('newFieldValue');
-        if (!valueInput) {
-          showStatus('Please enter a field value.', 'error');
-          return;
-        }
-        fieldValue = valueInput.value.trim();
+        fieldName = fieldType;
       }
       
-      if (!fieldName) {
-        showStatus('Please enter a field name.', 'error');
+      // Check if field already exists and has a value
+      if (metadata.hasOwnProperty(fieldName) && metadata[fieldName].trim() !== '') {
+        showStatus('This field already exists and has a value. Edit it in the table above.', 'error');
         return;
       }
       
-      // Check if field already exists in the table
-      const existingRows = Array.from(metadataTableBody.querySelectorAll('tr'));
-      const fieldExists = existingRows.some(row => {
-        const hiddenInput = row.querySelector('input[type="hidden"].field-name');
-        return hiddenInput && hiddenInput.value === fieldName;
-      });
-      
-      if (fieldExists) {
-        showStatus('Field already exists. Use the table above to edit it.', 'error');
+      // Validate field value
+      if (!isValidMetadataField(fieldName, fieldValue)) {
+        showStatus('Invalid field value. Please check for special characters or length.', 'error');
         return;
       }
       
-      // Add to metadata and table
+      // Add to metadata
       metadata[fieldName] = fieldValue;
-      addMetadataRow(fieldName, fieldValue, false);
+      addedFields.add(fieldName);
+      
+      // Re-render table to maintain proper sorting
+      renderMetadataTable();
       updateMetadataFoundDisplay();
+      updateAvailableFields();
       
       // Reset form
-      newFieldType.value = 'custom';
+      newFieldType.value = '';
       newFieldName.value = '';
-      fieldValueContainer.innerHTML = '<input type="text" id="newFieldValue" placeholder="Field value">';
-      newFieldName.style.display = 'block';
+      newFieldName.style.display = 'none';
+      newFieldValue.value = '';
       
-      const displayName = fieldType === 'ATTACHMENT' ? `File: ${JSON.parse(fieldValue.split('|')[0])}` : formatFieldName(fieldName);
-      showStatus(`Field "${displayName}" added successfully.`);
+      showStatus(`Field "${formatFieldName(fieldName)}" added successfully.`);
     });
 
-    // Convert file to base64
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-          const base64 = reader.result.split(',')[1];
-          resolve(base64);
-        };
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    // Save metadata - now actually writes to file
+    // Save metadata
     metadataForm.addEventListener("submit", async e => {
       e.preventDefault();
       
@@ -1035,142 +811,51 @@
       const newMetadata = {};
       
       rows.forEach(row => {
-        const nameInput = row.querySelector('.field-name') || row.querySelector('input[type="hidden"].field-name');
+        const nameInput = row.querySelector('.field-name');
         const valueInput = row.querySelector('.field-value');
         
         if (nameInput && valueInput) {
           const name = nameInput.value.trim().toUpperCase();
           const value = valueInput.value.trim();
           
-          if (name && value) {
+          if (name && value && isValidMetadataField(name, value)) {
             newMetadata[name] = value;
           }
         }
       });
       
       try {
-        // Create updated OGG file with new metadata
-        const updatedBlob = await writeMetadataToOgg(currentFile, newMetadata);
+        // Create a metadata file
+        const metadataEntries = Object.entries(newMetadata);
+        const metadataText = metadataEntries
+          .map(([key, value]) => `${key}=${value}`)
+          .join('\n');
+        
+        // Add header information
+        const fullMetadataText = `# OGG Metadata Export
+# Generated by Enhanced OGG Metadata Editor
+# Original file: ${currentFile.name}
+# Export date: ${new Date().toISOString()}
+# Total fields: ${metadataEntries.length}
+
+${metadataText}`;
+        
+        const blob = new Blob([fullMetadataText], { type: 'text/plain' });
         
         // Update global metadata
         metadata = newMetadata;
         
         // Create download link
-        downloadLink.href = URL.createObjectURL(updatedBlob);
-        downloadLink.download = `${currentFile.name.replace('.ogg', '')}_updated.ogg`;
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = `${currentFile.name.replace('.ogg', '')}_metadata.txt`;
         downloadLink.style.display = "block";
-        downloadLink.textContent = "📥 Download OGG with Updated Metadata";
+        downloadLink.textContent = "📥 Download Metadata File";
         
-        showStatus(`Metadata successfully written to file! ${Object.keys(newMetadata).length} fields saved.`);
+        showStatus(`Metadata file created successfully! ${metadataEntries.length} fields exported.`);
         
       } catch (error) {
         showStatus('Error saving metadata: ' + error.message, 'error');
         console.error(error);
-      }
-    });
-
-    // View file popup functionality
-    viewFileBtn.addEventListener('click', function() {
-      // Setup popup audio
-      popupAudio.src = audioPlayer.src;
-      
-      // Populate metadata table in popup
-      popupMetadataBody.innerHTML = '';
-      Object.entries(metadata).forEach(([key, value]) => {
-        if (value.trim() !== '') {
-          const row = document.createElement('tr');
-          
-          // Handle attachment fields differently
-          if (key.startsWith('ATTACHMENT') && value.includes('|')) {
-            const [fileName, fileType, fileSize] = value.split('|');
-            row.innerHTML = `
-              <td><strong>📎 ${formatFieldName(key)}</strong></td>
-              <td>${fileName} (${formatFileSize(parseInt(fileSize))})</td>
-            `;
-          } else {
-            row.innerHTML = `
-              <td><strong>${formatFieldName(key)}</strong></td>
-              <td>${value}</td>
-            `;
-          }
-          
-          popupMetadataBody.appendChild(row);
-        }
-      });
-      
-      // Show attached media if any
-      const attachmentFields = Object.entries(metadata).filter(([key, value]) => 
-        key.startsWith('ATTACHMENT') && value.includes('|')
-      );
-      
-      if (attachmentFields.length > 0) {
-        attachedMediaSection.style.display = 'block';
-        attachedMediaContainer.innerHTML = '';
-        
-        attachmentFields.forEach(([key, value]) => {
-          try {
-            const [fileName, fileType, fileSize, base64Data] = value.split('|');
-            const mediaDiv = document.createElement('div');
-            mediaDiv.className = 'media-item';
-            
-            if (fileType.startsWith('image/')) {
-              mediaDiv.innerHTML = `
-                <h5>🖼️ ${fileName}</h5>
-                <img src="data:${fileType};base64,${base64Data}" alt="${fileName}" style="max-width: 100%; height: auto;">
-                <p style="color: #888; font-size: 12px;">Size: ${formatFileSize(parseInt(fileSize))}</p>
-              `;
-            } else if (fileType.startsWith('video/')) {
-              mediaDiv.innerHTML = `
-                <h5>🎥 ${fileName}</h5>
-                <video controls style="max-width: 100%; height: auto;">
-                  <source src="data:${fileType};base64,${base64Data}" type="${fileType}">
-                  Your browser does not support the video tag.
-                </video>
-                <p style="color: #888; font-size: 12px;">Size: ${formatFileSize(parseInt(fileSize))}</p>
-              `;
-            } else if (fileType.startsWith('audio/')) {
-              mediaDiv.innerHTML = `
-                <h5>🎵 ${fileName}</h5>
-                <audio controls style="width: 100%;">
-                  <source src="data:${fileType};base64,${base64Data}" type="${fileType}">
-                  Your browser does not support the audio tag.
-                </audio>
-                <p style="color: #888; font-size: 12px;">Size: ${formatFileSize(parseInt(fileSize))}</p>
-              `;
-            } else {
-              mediaDiv.innerHTML = `
-                <h5>📄 ${fileName}</h5>
-                <p>File type: ${fileType}</p>
-                <p>Size: ${formatFileSize(parseInt(fileSize))}</p>
-                <a href="data:${fileType};base64,${base64Data}" download="${fileName}" 
-                   style="color: #0080ff; text-decoration: none;">📥 Download File</a>
-              `;
-            }
-            
-            attachedMediaContainer.appendChild(mediaDiv);
-          } catch (error) {
-            console.error('Error displaying attached media:', error);
-          }
-        });
-      } else {
-        attachedMediaSection.style.display = 'none';
-      }
-      
-      // Show popup
-      popupOverlay.style.display = 'flex';
-    });
-
-    // Close popup
-    popupClose.addEventListener('click', function() {
-      popupOverlay.style.display = 'none';
-      popupAudio.pause();
-    });
-
-    // Close popup when clicking overlay
-    popupOverlay.addEventListener('click', function(e) {
-      if (e.target === popupOverlay) {
-        popupOverlay.style.display = 'none';
-        popupAudio.pause();
       }
     });
 
@@ -1183,13 +868,54 @@
       };
     }
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-      showStatus('Ready to load OGG files. Drag and drop or click to browse.', 'success');
+    // Handle Enter key in new field inputs
+    newFieldValue.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addFieldBtn.click();
+      }
     });
 
-    // Make deleteRow available globally
-    window.deleteRow = deleteRow;
+    newFieldName.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        newFieldValue.focus();
+      }
+    });
+
+    // Auto-uppercase custom field names
+    newFieldName.addEventListener('input', function() {
+      this.value = this.value.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+    });
+
+    // Validate field values on input
+    document.addEventListener('input', function(e) {
+      if (e.target.classList.contains('field-value')) {
+        const value = e.target.value;
+        if (value.length > MAX_VALUE_LENGTH) {
+          e.target.value = value.substring(0, MAX_VALUE_LENGTH);
+          showStatus(`Value truncated to ${MAX_VALUE_LENGTH} characters.`, 'error');
+        }
+      }
+    });
+
+    // Save changes automatically when editing existing fields
+    document.addEventListener('input', function(e) {
+      if (e.target.classList.contains('field-value')) {
+        const row = e.target.closest('tr');
+        const fieldName = row.querySelector('.field-name').value;
+        const fieldValue = e.target.value;
+        
+        if (fieldName && isValidMetadataField(fieldName, fieldValue)) {
+          metadata[fieldName] = fieldValue;
+          updateMetadataFoundDisplay();
+        }
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      updateAvailableFields();
+      showStatus('Ready to load OGG files. Drag and drop or click to browse.');
+    });
   </script>
 </body>
 </html>

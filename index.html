@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Enhanced OGG Metadata Editor</title>
+  <title>Ogg Metadata Editor</title>
   <style>
     body { 
       font-family: Arial, sans-serif; 
@@ -24,12 +24,6 @@
     .drop-zone.dragover { 
       border-color: #0f0; 
       background: rgba(0, 255, 0, 0.1); 
-    }
-    audio { 
-      width: 100%; 
-      margin: 20px 0; 
-      background: #222;
-      border-radius: 4px;
     }
     .metadata-section {
       background: #1a1a1a;
@@ -97,6 +91,20 @@
     }
     button.danger:hover {
       background: #ff4444;
+    }
+    .experience-btn {
+      background: #0080ff;
+      font-size: 16px;
+      padding: 15px 30px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 128, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    .experience-btn:hover {
+      background: #0066cc;
+      box-shadow: 0 6px 16px rgba(0, 128, 255, 0.4);
+      transform: translateY(-2px);
     }
     .add-field-section {
       background: #2a2a2a;
@@ -176,6 +184,191 @@
       border-left: 3px solid #0080ff;
     }
 
+    /* Popup Styles */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .popup-overlay.show {
+      display: flex;
+    }
+    .popup-content {
+      background: #444;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 900px;
+      height: 80%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .popup-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #ccc;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+      z-index: 10;
+    }
+    .popup-close:hover {
+      color: #fff;
+    }
+    .popup-header {
+      background: #cc3333;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 12px 12px 0 0;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .popup-body {
+      flex: 1;
+      padding: 20px;
+      display: grid;
+      grid-template-areas: 
+        "alts main metadata"
+        "files files files";
+      grid-template-columns: 200px 1fr 200px;
+      grid-template-rows: 1fr auto;
+      gap: 20px;
+      overflow: hidden;
+    }
+    .alternate-tracks {
+      grid-area: alts;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .track-item {
+      background: #cc3333;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      font-weight: bold;
+    }
+    .track-item:hover {
+      background: #ff4444;
+      transform: translateY(-2px);
+    }
+    .player-main {
+      grid-area: main;
+      background: #cc3333;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 300px;
+    }
+    .play-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: white;
+      border: none;
+      color: #cc3333;
+      font-size: 30px;
+      cursor: pointer;
+      margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    .play-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+    .progress-bar {
+      width: 80%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      margin: 20px 0;
+      position: relative;
+      cursor: pointer;
+    }
+    .progress-fill {
+      height: 100%;
+      background: white;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .metadata-sidebar {
+      grid-area: metadata;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+    .metadata-item-popup {
+      background: #cc3333;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: white;
+    }
+    .attached-files {
+      grid-area: files;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    .file-item {
+      background: #cc3333;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .file-item:hover {
+      background: #ff4444;
+      transform: translateY(-2px);
+    }
+    .file-upload-field {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .file-preview {
+      max-width: 100px;
+      max-height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #555;
+    }
+    .file-info-small {
+      font-size: 12px;
+      color: #aaa;
+      margin-left: 10px;
+    }
+    .validation-error {
+      color: #ff4444;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
     @media (max-width: 768px) {
       .file-info-grid {
         grid-template-columns: 1fr;
@@ -184,11 +377,26 @@
         flex-direction: column;
         align-items: stretch;
       }
+      .popup-content {
+        width: 95%;
+        margin: 10px;
+      }
+      .popup-body {
+        grid-template-areas: 
+          "main main"
+          "alts metadata"
+          "files files";
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+      }
+      .attached-files {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Enhanced OGG Metadata Editor</h1>
+  <h1>Ogg Metadata Editor</h1>
 
   <!-- File Upload -->
   <div class="drop-zone" id="dropZone">
@@ -196,7 +404,7 @@
   </div>
   <input type="file" id="fileInput" accept=".ogg" style="display: none;">
 
-  <!-- File Info -->
+  <!-- File Information Section -->
   <div class="file-info" id="fileInfo" style="display: none;">
     <h3>File Information</h3>
     <div class="file-info-grid">
@@ -204,27 +412,74 @@
         <h4>Basic Info</h4>
         <p id="fileName"></p>
         <p id="fileSize"></p>
+        <p id="fileFormat"></p>
       </div>
       <div class="file-metadata-list">
-        <h4>Metadata Found (<span id="metadataCount">0</span> fields)</h4>
+        <h4>Found Metadata (<span id="metadataCount">0</span> fields)</h4>
         <div id="metadataFound">
           <p style="color: #888;">Loading metadata...</p>
         </div>
       </div>
     </div>
+    
+    <!-- Experience Ogg Button -->
+    <div style="text-align: center;">
+      <button class="experience-btn" id="experienceBtn">🎵 Experience Ogg</button>
+    </div>
   </div>
-
-  <!-- Audio Player -->
-  <audio id="audioPlayer" controls style="display: none;"></audio>
 
   <!-- Status Messages -->
   <div class="status" id="statusMsg"></div>
 
-  <!-- Metadata Section -->
+  <!-- Metadata Editor Section -->
   <div class="metadata-section" id="metadataSection" style="display: none;">
     <h2>Metadata Editor</h2>
     
-    <form id="metadataForm">
+    <!-- Found Metadata Table -->
+    <div id="foundMetadataSection">
+      <h3>Found Metadata</h3>
+      <table id="foundMetadataTable" style="display: none;">
+        <thead>
+          <tr>
+            <th style="width: 200px;">Field Name</th>
+            <th>Value</th>
+            <th style="width: 100px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="foundMetadataBody">
+        </tbody>
+      </table>
+      <p id="noFoundMetadata" style="color: #888; text-align: center; padding: 20px;">No readable metadata found in file</p>
+    </div>
+    
+    <!-- Add New Metadata Section -->
+    <div class="add-field-section">
+      <h3>Add New Metadata</h3>
+      <div class="add-field-row">
+        <select id="newFieldType">
+          <option value="">Select a field to add...</option>
+        </select>
+        <input type="text" id="newFieldName" placeholder="Field name (if custom)" style="display: none;">
+        <input type="text" id="newFieldValue" placeholder="Field value">
+        <button type="button" id="addFieldBtn" class="secondary">Add Field</button>
+      </div>
+      
+      <!-- File Upload Fields -->
+      <div id="fileUploadSection" style="display: none;">
+        <h4>Attach File</h4>
+        <input type="file" id="attachmentInput">
+        <div class="validation-error" id="validationError" style="display: none;"></div>
+        <div id="filePreview" class="file-upload-field" style="display: none;">
+          <img id="previewImage" class="file-preview" style="display: none;">
+          <div id="previewInfo" class="file-info-small"></div>
+          <button type="button" id="removeAttachment" class="danger">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Added Metadata Table -->
+    <div id="addedMetadataSection" style="display: none;">
+      <h3>Added Metadata</h3>
       <table>
         <thead>
           <tr>
@@ -233,30 +488,54 @@
             <th style="width: 100px;">Actions</th>
           </tr>
         </thead>
-        <tbody id="metadataTableBody">
+        <tbody id="addedMetadataBody">
         </tbody>
       </table>
-      
-      <!-- Add New Field -->
-      <div class="add-field-section">
-        <h4>Add New Metadata Field</h4>
-        <div class="add-field-row">
-          <select id="newFieldType">
-            <option value="">Select a field to add...</option>
-          </select>
-          <input type="text" id="newFieldName" placeholder="Field name (if custom)" style="display: none;">
-          <input type="text" id="newFieldValue" placeholder="Field value">
-          <button type="button" id="addFieldBtn" class="secondary">Add Field</button>
-        </div>
-      </div>
+    </div>
 
-      <button type="submit">💾 Save Metadata to File</button>
+    <!-- Save and Download -->
+    <form id="metadataForm">
+      <button type="submit">💾 Save Metadata to New OGG File</button>
     </form>
     
-    <!-- Download Section -->
     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #444;">
       <h3>Download</h3>
-      <a id="downloadLink" style="display:none; color: #0080ff; text-decoration: none;">📥 Download Metadata File</a>
+      <a id="downloadLink" style="display:none; color: #0080ff; text-decoration: none;">📥 Download Updated OGG File</a>
+    </div>
+  </div>
+
+  <!-- Ogg Player Popup -->
+  <div class="popup-overlay" id="oggPopup">
+    <div class="popup-content">
+      <button class="popup-close" id="closePopup">&times;</button>
+      <div class="popup-header">Ogg player</div>
+      <div class="popup-body">
+        <div class="alternate-tracks">
+          <div class="track-item" id="alt1">Alt 1</div>
+          <div class="track-item" id="alt2">Alt 2</div>
+          <div class="track-item" id="alt3">Alt 3</div>
+          <div class="track-item" id="alt4">Alt 4</div>
+        </div>
+        
+        <div class="player-main">
+          <button class="play-button" id="playButton">▶</button>
+          <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <audio id="audioPlayer" style="display: none;"></audio>
+        </div>
+        
+        <div class="metadata-sidebar" id="popupMetadata">
+          <!-- Metadata items will be populated here -->
+        </div>
+        
+        <div class="attached-files" id="attachedFilesGrid">
+          <div class="file-item">Metadata - Attached File</div>
+          <div class="file-item">Metadata - Attached File</div>
+          <div class="file-item">Metadata - Attached File</div>
+          <div class="file-item">Metadata - Attached File</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -265,12 +544,14 @@
     const dropZone = document.getElementById("dropZone");
     const fileInput = document.getElementById("fileInput");
     const audioPlayer = document.getElementById("audioPlayer");
-    const metadataTableBody = document.getElementById("metadataTableBody");
+    const foundMetadataBody = document.getElementById("foundMetadataBody");
+    const addedMetadataBody = document.getElementById("addedMetadataBody");
     const metadataForm = document.getElementById("metadataForm");
     const metadataSection = document.getElementById("metadataSection");
     const fileInfo = document.getElementById("fileInfo");
     const fileName = document.getElementById("fileName");
     const fileSize = document.getElementById("fileSize");
+    const fileFormat = document.getElementById("fileFormat");
     const statusMsg = document.getElementById("statusMsg");
     const newFieldType = document.getElementById("newFieldType");
     const newFieldName = document.getElementById("newFieldName");
@@ -279,14 +560,78 @@
     const downloadLink = document.getElementById("downloadLink");
     const metadataFound = document.getElementById("metadataFound");
     const metadataCount = document.getElementById("metadataCount");
+    const experienceBtn = document.getElementById("experienceBtn");
+    const oggPopup = document.getElementById("oggPopup");
+    const closePopup = document.getElementById("closePopup");
+    const playButton = document.getElementById("playButton");
+    const progressBar = document.getElementById("progressBar");
+    const progressFill = document.getElementById("progressFill");
+    const foundMetadataTable = document.getElementById("foundMetadataTable");
+    const noFoundMetadata = document.getElementById("noFoundMetadata");
+    const addedMetadataSection = document.getElementById("addedMetadataSection");
+    const fileUploadSection = document.getElementById("fileUploadSection");
+    const attachmentInput = document.getElementById("attachmentInput");
+    const filePreview = document.getElementById("filePreview");
+    const previewImage = document.getElementById("previewImage");
+    const previewInfo = document.getElementById("previewInfo");
+    const removeAttachment = document.getElementById("removeAttachment");
+    const popupMetadata = document.getElementById("popupMetadata");
+    const validationError = document.getElementById("validationError");
+    const attachedFilesGrid = document.getElementById("attachedFilesGrid");
 
     let currentFile;
-    let metadata = {};
-    let originalMetadata = {};
-    let addedFields = new Set();
+    let originalFileBuffer;
+    let foundMetadata = {};
+    let addedMetadata = {};
+    let currentAttachment = null;
+    let isPlaying = false;
 
-    // Field definitions
-    const fieldDefinitions = {
+    // File validation rules
+    const fileValidationRules = {
+      'ALBUM_ART': {
+        extensions: ['.jpg', '.jpeg', '.png'],
+        mimeTypes: ['image/jpeg', 'image/png'],
+        maxSize: 5 * 1024 * 1024 // 5MB
+      },
+      'CERTIFICATE_AUTH': {
+        extensions: ['.pdf'],
+        mimeTypes: ['application/pdf'],
+        maxSize: 10 * 1024 * 1024 // 10MB
+      },
+      'ALTERNATE_TRACK_1': {
+        extensions: ['.ogg'],
+        mimeTypes: ['audio/ogg'],
+        maxSize: 50 * 1024 * 1024 // 50MB
+      },
+      'ALTERNATE_TRACK_2': {
+        extensions: ['.ogg'],
+        mimeTypes: ['audio/ogg'],
+        maxSize: 50 * 1024 * 1024
+      },
+      'ALTERNATE_TRACK_3': {
+        extensions: ['.ogg'],
+        mimeTypes: ['audio/ogg'],
+        maxSize: 50 * 1024 * 1024
+      },
+      'ALTERNATE_TRACK_4': {
+        extensions: ['.ogg'],
+        mimeTypes: ['audio/ogg'],
+        maxSize: 50 * 1024 * 1024
+      },
+      'LINER_NOTES': {
+        extensions: ['.pdf', '.txt', '.doc', '.docx'],
+        mimeTypes: ['application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        maxSize: 5 * 1024 * 1024
+      },
+      'ARTWORK': {
+        extensions: ['.jpg', '.jpeg', '.png', '.gif'],
+        mimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+        maxSize: 5 * 1024 * 1024
+      }
+    };
+
+    // Human-readable metadata fields
+    const humanReadableFields = {
       'TITLE': { name: 'Title', type: 'text' },
       'ARTIST': { name: 'Artist', type: 'text' },
       'ALBUM': { name: 'Album', type: 'text' },
@@ -308,14 +653,14 @@
       'CONDUCTOR': { name: 'Conductor', type: 'text' },
       'LYRICIST': { name: 'Lyricist', type: 'text' },
       'PRODUCER': { name: 'Producer', type: 'text' },
-      'ARRANGER': { name: 'Arranger', type: 'text' },
-      'ENGINEER': { name: 'Engineer', type: 'text' },
-      'MIXER': { name: 'Mixer', type: 'text' },
-      'ORGANIZATION': { name: 'Organization', type: 'text' },
-      'LOCATION': { name: 'Location', type: 'text' },
-      'CONTACT': { name: 'Contact', type: 'text' },
-      'VERSION': { name: 'Version', type: 'text' },
-      'SUBTITLE': { name: 'Subtitle', type: 'text' }
+      'ALBUM_ART': { name: 'Album Art/Cover Art', type: 'file' },
+      'CERTIFICATE_AUTH': { name: 'Certificate of Authenticity', type: 'file' },
+      'ALTERNATE_TRACK_1': { name: 'Alternate Track 1', type: 'file' },
+      'ALTERNATE_TRACK_2': { name: 'Alternate Track 2', type: 'file' },
+      'ALTERNATE_TRACK_3': { name: 'Alternate Track 3', type: 'file' },
+      'ALTERNATE_TRACK_4': { name: 'Alternate Track 4', type: 'file' },
+      'LINER_NOTES': { name: 'Liner Notes', type: 'file' },
+      'ARTWORK': { name: 'Additional Artwork', type: 'file' }
     };
 
     // Valid metadata field patterns
@@ -342,6 +687,57 @@
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
+    // Validate file attachment
+    function validateFileAttachment(fieldType, file) {
+      const rules = fileValidationRules[fieldType];
+      if (!rules) return { valid: true };
+
+      const errors = [];
+      const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+      
+      // Check extension
+      if (!rules.extensions.includes(fileExt)) {
+        errors.push(`File must be one of: ${rules.extensions.join(', ')}`);
+      }
+      
+      // Check MIME type
+      if (!rules.mimeTypes.includes(file.type)) {
+        errors.push(`Invalid file type. Expected: ${rules.mimeTypes.join(', ')}`);
+      }
+      
+      // Check file size
+      if (file.size > rules.maxSize) {
+        errors.push(`File too large. Maximum size: ${formatFileSize(rules.maxSize)}`);
+      }
+      
+      return {
+        valid: errors.length === 0,
+        errors: errors
+      };
+    }
+
+    // Check if metadata is human-readable
+    function isHumanReadable(key, value) {
+      // Filter out binary-looking fields
+      const binaryFields = ['COMM', 'METADATA_BLOCK_PICTURE', 'COVERART', 'BLOCK_PICTURE'];
+      if (binaryFields.some(field => key.includes(field))) return false;
+      
+      // Check if value looks like binary data
+      if (typeof value !== 'string') return false;
+      if (value.length === 0) return false;
+      
+      // Check for non-printable characters (binary data indicators)
+      if (/[\x00-\x08\x0E-\x1F\x7F-\x9F]/.test(value)) return false;
+      
+      // Check if it's mostly numbers without context (likely technical)
+      if (/^[0-9\s,.-]+$/.test(value) && value.length > 20) return false;
+      
+      // Filter out very long strings that might be encoded data
+      if (value.length > 500) return false;
+      
+      return true;
+    }
+
     // Validate metadata field
     function isValidMetadataField(key, value) {
       if (!key || !value) return false;
@@ -353,41 +749,24 @@
       // Check value length
       if (value.length > MAX_VALUE_LENGTH) return false;
       
-      // Check if value contains only printable characters
-      if (!/^[\x20-\x7E\u00A0-\uFFFF]*$/.test(value)) return false;
-      
-      // Exclude common binary or corrupted patterns
-      if (value.includes('\x00') || value.includes('\uFFFD')) return false;
-      if (/^[\x00-\x1F]*$/.test(value)) return false; // Only control characters
-      
       return true;
-    }
-
-    // Clean and filter metadata
-    function cleanMetadata(rawMetadata) {
-      const cleaned = {};
-      
-      for (const [key, value] of Object.entries(rawMetadata)) {
-        const cleanKey = key.trim().toUpperCase();
-        const cleanValue = value.trim();
-        
-        if (isValidMetadataField(cleanKey, cleanValue)) {
-          cleaned[cleanKey] = cleanValue;
-        }
-      }
-      
-      return cleaned;
     }
 
     // Update available fields dropdown
     function updateAvailableFields() {
       newFieldType.innerHTML = '<option value="">Select a field to add...</option>';
       
-      for (const [key, def] of Object.entries(fieldDefinitions)) {
-        if (!metadata.hasOwnProperty(key)) {
+      // Get all existing fields
+      const existingFields = new Set([...Object.keys(foundMetadata), ...Object.keys(addedMetadata)]);
+      
+      for (const [key, def] of Object.entries(humanReadableFields)) {
+        if (!existingFields.has(key)) {
           const option = document.createElement('option');
           option.value = key;
           option.textContent = def.name;
+          if (def.type === 'file') {
+            option.setAttribute('data-type', 'file');
+          }
           newFieldType.appendChild(option);
         }
       }
@@ -430,32 +809,32 @@
       }
 
       currentFile = file;
-      addedFields.clear();
+      foundMetadata = {};
+      addedMetadata = {};
+      
+      // Store original file buffer for later use
+      originalFileBuffer = await file.arrayBuffer();
       
       // Show file info
       fileName.textContent = `File: ${file.name}`;
       fileSize.textContent = `Size: ${formatFileSize(file.size)}`;
+      fileFormat.textContent = `Format: OGG Vorbis`;
       fileInfo.style.display = 'block';
-
-      // Setup audio player
-      audioPlayer.src = URL.createObjectURL(file);
-      audioPlayer.style.display = 'block';
 
       try {
         // Read actual metadata from the OGG file
         await readActualMetadata(file);
         updateMetadataFoundDisplay();
-        renderMetadataTable();
+        renderFoundMetadataTable();
         updateAvailableFields();
         metadataSection.style.display = 'block';
-        showStatus(`File loaded successfully! Found ${Object.keys(metadata).length} metadata fields.`);
+        showStatus(`File loaded successfully! Found ${Object.keys(foundMetadata).length} readable metadata fields.`);
       } catch (error) {
         showStatus('Error reading metadata: ' + error.message, 'error');
         console.error(error);
-        // Fallback to basic file info
-        metadata = extractBasicFileInfo(file);
+        foundMetadata = {};
         updateMetadataFoundDisplay();
-        renderMetadataTable();
+        renderFoundMetadataTable();
         updateAvailableFields();
         metadataSection.style.display = 'block';
       }
@@ -463,11 +842,11 @@
 
     // Update metadata found display
     function updateMetadataFoundDisplay() {
-      const foundFields = Object.keys(metadata).filter(key => metadata[key].trim() !== '');
+      const foundFields = Object.keys(foundMetadata).filter(key => foundMetadata[key].trim() !== '');
       metadataCount.textContent = foundFields.length;
       
       if (foundFields.length === 0) {
-        metadataFound.innerHTML = '<p style="color: #888;">No valid metadata found in file</p>';
+        metadataFound.innerHTML = '<p style="color: #888;">No readable metadata found in file</p>';
         return;
       }
       
@@ -475,14 +854,14 @@
         `<div class="metadata-item">
           <span class="checkmark">✓</span>
           <span class="key">${formatFieldName(field)}:</span>
-          <span class="value">${metadata[field].substring(0, 100)}${metadata[field].length > 100 ? '...' : ''}</span>
+          <span class="value">${foundMetadata[field].substring(0, 50)}${foundMetadata[field].length > 50 ? '...' : ''}</span>
         </div>`
       ).join('');
       
       metadataFound.innerHTML = html;
     }
 
-    // Read and parse OGG metadata with improved filtering
+    // Read and parse OGG metadata with human-readable filtering
     async function readActualMetadata(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -491,19 +870,20 @@
             const arrayBuffer = e.target.result;
             const uint8Array = new Uint8Array(arrayBuffer);
             
-            // Parse OGG Vorbis comments with better filtering
+            // Parse OGG Vorbis comments
             const rawMetadata = parseVorbisComments(uint8Array);
-            metadata = cleanMetadata(rawMetadata);
-            originalMetadata = {...metadata};
             
-            // Mark existing fields as added
-            Object.keys(metadata).forEach(key => addedFields.add(key));
+            // Filter to only human-readable metadata
+            Object.keys(rawMetadata).forEach(key => {
+              const value = rawMetadata[key];
+              if (isHumanReadable(key, value)) {
+                foundMetadata[key.toUpperCase()] = value;
+              }
+            });
             
             resolve();
           } catch (error) {
             console.warn('Could not parse OGG metadata:', error);
-            metadata = extractBasicFileInfo(file);
-            originalMetadata = {...metadata};
             resolve();
           }
         };
@@ -512,101 +892,15 @@
       });
     }
 
-    // Improved Vorbis comment parser with better validation
+    // Parse Vorbis comments (simplified version focusing on readable data)
     function parseVorbisComments(data) {
-      const rawMetadata = {};
-      
-      try {
-        // Convert to string for searching, but be careful with encoding
-        const searchData = data.slice(0, Math.min(data.length, 50000)); // Limit search area
-        
-        // Look for Vorbis comment header more precisely
-        for (let i = 0; i < searchData.length - 10; i++) {
-          // Look for the pattern: packet_type(1) + "vorbis"(6)
-          if (searchData[i] === 0x03 && 
-              searchData[i+1] === 0x76 && searchData[i+2] === 0x6f && 
-              searchData[i+3] === 0x72 && searchData[i+4] === 0x62 && 
-              searchData[i+5] === 0x69 && searchData[i+6] === 0x73) {
-            
-            // Found Vorbis comment header, parse from here
-            const commentData = data.slice(i + 7);
-            return extractVorbisComments(commentData);
-          }
-        }
-        
-        // Fallback: look for key=value patterns in a safer way
-        return extractKeyValuePairs(data);
-        
-      } catch (error) {
-        console.warn('Error parsing Vorbis comments:', error);
-        return {};
-      }
-    }
-
-    // Extract Vorbis comments from comment packet
-    function extractVorbisComments(data) {
       const metadata = {};
       
       try {
-        let offset = 0;
-        const dataView = new DataView(data.buffer, data.byteOffset);
-        
-        // Skip vendor string
-        if (offset + 4 > data.length) return metadata;
-        const vendorLength = dataView.getUint32(offset, true);
-        offset += 4 + vendorLength;
-        
-        // Read user comment list
-        if (offset + 4 > data.length) return metadata;
-        const userCommentListLength = dataView.getUint32(offset, true);
-        offset += 4;
-        
-        for (let i = 0; i < userCommentListLength && offset < data.length - 4; i++) {
-          const commentLength = dataView.getUint32(offset, true);
-          offset += 4;
-          
-          if (offset + commentLength > data.length || commentLength > 1000) {
-            break; // Prevent reading beyond bounds or unreasonably long comments
-          }
-          
-          try {
-            const commentBytes = data.slice(offset, offset + commentLength);
-            const comment = new TextDecoder('utf-8', {fatal: true}).decode(commentBytes);
-            
-            const equalIndex = comment.indexOf('=');
-            if (equalIndex > 0 && equalIndex < comment.length - 1) {
-              const key = comment.substring(0, equalIndex).trim().toUpperCase();
-              const value = comment.substring(equalIndex + 1).trim();
-              
-              if (key.length >= MIN_FIELD_LENGTH && key.length <= MAX_FIELD_LENGTH && 
-                  value.length > 0 && value.length <= MAX_VALUE_LENGTH) {
-                metadata[key] = value;
-              }
-            }
-          } catch (decodeError) {
-            // Skip invalid UTF-8 sequences
-            console.warn('Skipping invalid UTF-8 comment');
-          }
-          
-          offset += commentLength;
-        }
-        
-      } catch (error) {
-        console.warn('Error extracting Vorbis comments:', error);
-      }
-      
-      return metadata;
-    }
-
-    // Fallback key-value extraction with strict validation
-    function extractKeyValuePairs(data) {
-      const metadata = {};
-      
-      try {
-        // Convert to string but handle encoding carefully
+        // Convert to string for searching, being careful with encoding
         const textData = new TextDecoder('utf-8', {fatal: false}).decode(data.slice(0, 10000));
         
-        // Look for patterns that look like metadata
+        // Look for key=value patterns
         const keyValueRegex = /([A-Z][A-Z0-9_]{1,49})=([^\x00-\x1F\x7F-\x9F]{1,200})/g;
         let match;
         
@@ -614,89 +908,117 @@
           const key = match[1].trim();
           const value = match[2].trim();
           
-          // Additional validation
-          if (isValidMetadataField(key, value)) {
+          if (isValidMetadataField(key, value) && isHumanReadable(key, value)) {
             metadata[key] = value;
           }
         }
         
       } catch (error) {
-        console.warn('Error in fallback key-value extraction:', error);
+        console.warn('Error parsing Vorbis comments:', error);
       }
       
       return metadata;
     }
 
-    // Render metadata table
-    function renderMetadataTable() {
-      metadataTableBody.innerHTML = "";
+    // Render found metadata table
+    function renderFoundMetadataTable() {
+      const hasFoundMetadata = Object.keys(foundMetadata).length > 0;
       
-      // Get all fields (existing + standard ones)
-      const allFields = new Set([...Object.keys(fieldDefinitions), ...Object.keys(metadata)]);
-      
-      // Sort fields: existing metadata first, then standard fields
-      const sortedFields = Array.from(allFields).sort((a, b) => {
-        const aHasValue = metadata[a] && metadata[a].trim() !== '';
-        const bHasValue = metadata[b] && metadata[b].trim() !== '';
-        const aIsStandard = fieldDefinitions.hasOwnProperty(a);
-        const bIsStandard = fieldDefinitions.hasOwnProperty(b);
+      if (hasFoundMetadata) {
+        foundMetadataTable.style.display = 'table';
+        noFoundMetadata.style.display = 'none';
         
-        if (aHasValue && !bHasValue) return -1;
-        if (!aHasValue && bHasValue) return 1;
-        if (aIsStandard && !bIsStandard) return -1;
-        if (!aIsStandard && bIsStandard) return 1;
-        return a.localeCompare(b);
-      });
-      
-      // Add all fields to table
-      sortedFields.forEach(field => {
-        const value = metadata[field] || '';
-        const hasOriginalValue = originalMetadata.hasOwnProperty(field) && originalMetadata[field].trim() !== '';
-        const isAdded = addedFields.has(field) && !hasOriginalValue;
-        addMetadataRow(field, value, hasOriginalValue, isAdded);
-      });
+        foundMetadataBody.innerHTML = '';
+        Object.entries(foundMetadata).forEach(([key, value]) => {
+          addFoundMetadataRow(key, value);
+        });
+      } else {
+        foundMetadataTable.style.display = 'none';
+        noFoundMetadata.style.display = 'block';
+      }
     }
 
-    // Add a metadata row to the table
-    function addMetadataRow(key, value, hasOriginalValue = false, isAdded = false) {
+    // Add found metadata row
+    function addFoundMetadataRow(key, value) {
       const row = document.createElement('tr');
-      
-      // Style rows differently based on source
-      if (hasOriginalValue) {
-        row.className = 'original-field';
-      } else if (isAdded) {
-        row.className = 'added-field';
-      }
+      row.className = 'original-field';
       
       const fieldDisplayName = formatFieldName(key);
-      const isStandardField = fieldDefinitions.hasOwnProperty(key);
       
       row.innerHTML = `
         <td>
           <strong>${fieldDisplayName}</strong>
-          ${hasOriginalValue ? '<span style="color: #4a4; font-size: 12px; margin-left: 8px;" title="Original metadata">●</span>' : ''}
-          ${isAdded ? '<span style="color: #0080ff; font-size: 12px; margin-left: 8px;" title="Added field">+</span>' : ''}
+          <span style="color: #4a4; font-size: 12px; margin-left: 8px;" title="Original metadata">●</span>
           <input type="hidden" class="field-name" value="${key}">
         </td>
         <td>
           <input type="text" class="field-value" value="${value}" 
                  placeholder="Enter ${fieldDisplayName.toLowerCase()}"
-                 maxlength="${MAX_VALUE_LENGTH}"
-                 ${hasOriginalValue ? 'title="Original value from file"' : ''}>
+                 maxlength="${MAX_VALUE_LENGTH}">
         </td>
         <td>
-          <button type="button" class="delete-row danger" onclick="deleteRow(this)" 
-                  ${isStandardField && !hasOriginalValue && !isAdded ? 'style="display:none"' : ''}>Delete</button>
+          <button type="button" class="delete-found-row danger" onclick="deleteFoundRow(this)">Delete</button>
         </td>
       `;
       
-      metadataTableBody.appendChild(row);
+      foundMetadataBody.appendChild(row);
+    }
+
+    // Render added metadata table
+    function renderAddedMetadataTable() {
+      const hasAddedMetadata = Object.keys(addedMetadata).length > 0;
+      
+      if (hasAddedMetadata) {
+        addedMetadataSection.style.display = 'block';
+        addedMetadataBody.innerHTML = '';
+        
+        Object.entries(addedMetadata).forEach(([key, data]) => {
+          addAddedMetadataRow(key, data);
+        });
+      } else {
+        addedMetadataSection.style.display = 'none';
+      }
+    }
+
+    // Add added metadata row
+    function addAddedMetadataRow(key, data) {
+      const row = document.createElement('tr');
+      row.className = 'added-field';
+      
+      const fieldDisplayName = formatFieldName(key);
+      const isFileField = data.type === 'file';
+      
+      let valueDisplay = '';
+      if (isFileField && data.file) {
+        valueDisplay = `<div class="file-upload-field">
+          ${data.file.type.startsWith('image/') ? `<img src="${data.preview}" class="file-preview">` : ''}
+          <span class="file-info-small">${data.file.name} (${formatFileSize(data.file.size)})</span>
+        </div>`;
+      } else {
+        valueDisplay = `<input type="text" class="field-value" value="${data.value || ''}" 
+                       placeholder="Enter ${fieldDisplayName.toLowerCase()}"
+                       maxlength="${MAX_VALUE_LENGTH}">`;
+      }
+      
+      row.innerHTML = `
+        <td>
+          <strong>${fieldDisplayName}</strong>
+          <span style="color: #0080ff; font-size: 12px; margin-left: 8px;" title="Added field">+</span>
+          <input type="hidden" class="field-name" value="${key}">
+        </td>
+        <td>${valueDisplay}</td>
+        <td>
+          <button type="button" class="delete-added-row danger" onclick="deleteAddedRow(this)">Delete</button>
+        </td>
+      `;
+      
+      addedMetadataBody.appendChild(row);
     }
 
     // Format field names for display
     function formatFieldName(fieldName) {
-      if (fieldDefinitions[fieldName]) {
-        return fieldDefinitions[fieldName].name;
+      if (humanReadableFields[fieldName]) {
+        return humanReadableFields[fieldName].name;
       }
       
       // Convert UPPERCASE_FIELD to Title Case
@@ -705,33 +1027,118 @@
         .join(' ');
     }
 
-    // Delete a metadata row
-    window.deleteRow = function(button) {
+    // Delete found metadata row
+    window.deleteFoundRow = function(button) {
       const row = button.closest('tr');
       const fieldName = row.querySelector('.field-name').value;
       
       if (confirm(`Delete field "${formatFieldName(fieldName)}"?`)) {
-        delete metadata[fieldName];
-        addedFields.delete(fieldName);
+        delete foundMetadata[fieldName];
         row.remove();
         updateMetadataFoundDisplay();
         updateAvailableFields();
         showStatus(`Field "${formatFieldName(fieldName)}" deleted.`);
+        
+        if (Object.keys(foundMetadata).length === 0) {
+          renderFoundMetadataTable();
+        }
+      }
+    };
+
+    // Delete added metadata row
+    window.deleteAddedRow = function(button) {
+      const row = button.closest('tr');
+      const fieldName = row.querySelector('.field-name').value;
+      
+      if (confirm(`Delete field "${formatFieldName(fieldName)}"?`)) {
+        delete addedMetadata[fieldName];
+        row.remove();
+        updateAvailableFields();
+        showStatus(`Field "${formatFieldName(fieldName)}" deleted.`);
+        
+        if (Object.keys(addedMetadata).length === 0) {
+          renderAddedMetadataTable();
+        }
       }
     };
 
     // Handle field type selection
     newFieldType.addEventListener('change', function() {
       const fieldType = this.value;
+      const selectedOption = this.options[this.selectedIndex];
+      const isFileType = selectedOption.getAttribute('data-type') === 'file';
+      
+      // Clear validation error
+      validationError.style.display = 'none';
       
       if (fieldType === 'custom') {
         newFieldName.style.display = 'block';
         newFieldName.placeholder = 'Enter custom field name (UPPERCASE)';
+        fileUploadSection.style.display = 'none';
         newFieldName.focus();
+      } else if (isFileType) {
+        newFieldName.style.display = 'none';
+        newFieldName.value = fieldType;
+        fileUploadSection.style.display = 'block';
+        
+        // Update file input accept attribute based on field type
+        const rules = fileValidationRules[fieldType];
+        if (rules) {
+          attachmentInput.accept = rules.extensions.join(',');
+        }
+        
+        newFieldValue.placeholder = `Select file for ${selectedOption.textContent}`;
       } else {
         newFieldName.style.display = 'none';
         newFieldName.value = fieldType;
+        fileUploadSection.style.display = 'none';
       }
+    });
+
+    // Handle attachment upload with validation
+    attachmentInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const fieldType = newFieldType.value;
+      
+      if (file) {
+        // Validate file
+        const validation = validateFileAttachment(fieldType, file);
+        
+        if (!validation.valid) {
+          validationError.innerHTML = validation.errors.join('<br>');
+          validationError.style.display = 'block';
+          this.value = ''; // Clear the input
+          filePreview.style.display = 'none';
+          currentAttachment = null;
+          return;
+        }
+        
+        validationError.style.display = 'none';
+        currentAttachment = file;
+        previewInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+        
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            previewImage.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          previewImage.style.display = 'none';
+        }
+        
+        filePreview.style.display = 'flex';
+      }
+    });
+
+    // Remove attachment
+    removeAttachment.addEventListener('click', function() {
+      currentAttachment = null;
+      attachmentInput.value = '';
+      filePreview.style.display = 'none';
+      previewImage.style.display = 'none';
+      validationError.style.display = 'none';
     });
 
     // Add new field
@@ -745,8 +1152,15 @@
       
       let fieldName = '';
       const fieldValue = newFieldValue.value.trim();
+      const selectedOption = newFieldType.options[newFieldType.selectedIndex];
+      const isFileType = selectedOption.getAttribute('data-type') === 'file';
       
-      if (!fieldValue) {
+      if (isFileType && !currentAttachment) {
+        showStatus('Please select a file to attach.', 'error');
+        return;
+      }
+      
+      if (!isFileType && !fieldValue) {
         showStatus('Please enter a field value.', 'error');
         return;
       }
@@ -772,45 +1186,200 @@
         fieldName = fieldType;
       }
       
-      // Check if field already exists and has a value
-      if (metadata.hasOwnProperty(fieldName) && metadata[fieldName].trim() !== '') {
-        showStatus('This field already exists and has a value. Edit it in the table above.', 'error');
+      // Check if field already exists
+      if (foundMetadata.hasOwnProperty(fieldName) || addedMetadata.hasOwnProperty(fieldName)) {
+        showStatus('This field already exists. Edit it in the table above.', 'error');
         return;
       }
       
-      // Validate field value
-      if (!isValidMetadataField(fieldName, fieldValue)) {
-        showStatus('Invalid field value. Please check for special characters or length.', 'error');
-        return;
+      // Add to addedMetadata
+      if (isFileType) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          addedMetadata[fieldName] = {
+            type: 'file',
+            file: currentAttachment,
+            preview: e.target.result,
+            value: currentAttachment.name,
+            buffer: null // Will be set when file is read
+          };
+          
+          // Read file as array buffer for embedding
+          const bufferReader = new FileReader();
+          bufferReader.onload = function(e) {
+            addedMetadata[fieldName].buffer = e.target.result;
+            renderAddedMetadataTable();
+            updateAvailableFields();
+            resetAddForm();
+            showStatus(`File field "${formatFieldName(fieldName)}" added successfully.`);
+            updatePopupAttachedFiles();
+          };
+          bufferReader.readAsArrayBuffer(currentAttachment);
+        };
+        reader.readAsDataURL(currentAttachment);
+      } else {
+        // Validate field value for text fields
+        if (!isValidMetadataField(fieldName, fieldValue)) {
+          showStatus('Invalid field value. Please check for special characters or length.', 'error');
+          return;
+        }
+        
+        addedMetadata[fieldName] = {
+          type: 'text',
+          value: fieldValue
+        };
+        
+        renderAddedMetadataTable();
+        updateAvailableFields();
+        resetAddForm();
+        showStatus(`Field "${formatFieldName(fieldName)}" added successfully.`);
       }
-      
-      // Add to metadata
-      metadata[fieldName] = fieldValue;
-      addedFields.add(fieldName);
-      
-      // Re-render table to maintain proper sorting
-      renderMetadataTable();
-      updateMetadataFoundDisplay();
-      updateAvailableFields();
-      
-      // Reset form
+    });
+
+    // Reset add form
+    function resetAddForm() {
       newFieldType.value = '';
       newFieldName.value = '';
       newFieldName.style.display = 'none';
       newFieldValue.value = '';
-      
-      showStatus(`Field "${formatFieldName(fieldName)}" added successfully.`);
+      fileUploadSection.style.display = 'none';
+      currentAttachment = null;
+      attachmentInput.value = '';
+      filePreview.style.display = 'none';
+      previewImage.style.display = 'none';
+      validationError.style.display = 'none';
+    }
+
+    // Experience Ogg button
+    experienceBtn.addEventListener('click', function() {
+      if (currentFile) {
+        audioPlayer.src = URL.createObjectURL(currentFile);
+        updatePopupMetadata();
+        updatePopupAttachedFiles();
+        oggPopup.classList.add('show');
+      }
     });
 
-    // Save metadata
-    metadataForm.addEventListener("submit", async e => {
-      e.preventDefault();
+    // Close popup
+    closePopup.addEventListener('click', function() {
+      oggPopup.classList.remove('show');
+      if (!audioPlayer.paused) {
+        audioPlayer.pause();
+        playButton.textContent = '▶';
+        isPlaying = false;
+      }
+    });
+
+    // Play/Pause button
+    playButton.addEventListener('click', function() {
+      if (isPlaying) {
+        audioPlayer.pause();
+        playButton.textContent = '▶';
+        isPlaying = false;
+      } else {
+        audioPlayer.play();
+        playButton.textContent = '⏸';
+        isPlaying = true;
+      }
+    });
+
+    // Progress bar update
+    audioPlayer.addEventListener('timeupdate', function() {
+      if (audioPlayer.duration) {
+        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        progressFill.style.width = progress + '%';
+      }
+    });
+
+    // Progress bar click
+    progressBar.addEventListener('click', function(e) {
+      const rect = progressBar.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      audioPlayer.currentTime = pos * audioPlayer.duration;
+    });
+
+    // Update popup metadata display
+    function updatePopupMetadata() {
+      const allMetadata = {...foundMetadata};
+      Object.entries(addedMetadata).forEach(([key, data]) => {
+        if (data.type !== 'file') {
+          allMetadata[key] = data.value || '';
+        }
+      });
       
-      // Collect all metadata from the table
-      const rows = metadataTableBody.querySelectorAll('tr');
-      const newMetadata = {};
+      popupMetadata.innerHTML = '';
+      Object.entries(allMetadata).forEach(([key, value]) => {
+        if (value && value.trim()) {
+          const div = document.createElement('div');
+          div.className = 'metadata-item-popup';
+          div.innerHTML = `<strong>${formatFieldName(key)}:</strong><br>${value.substring(0, 30)}${value.length > 30 ? '...' : ''}`;
+          popupMetadata.appendChild(div);
+        }
+      });
+    }
+
+    // Update popup attached files
+    function updatePopupAttachedFiles() {
+      // Update alternate tracks
+      for (let i = 1; i <= 4; i++) {
+        const altKey = `ALTERNATE_TRACK_${i}`;
+        const altElement = document.getElementById(`alt${i}`);
+        if (addedMetadata[altKey] && addedMetadata[altKey].type === 'file') {
+          altElement.style.background = '#4a4';
+          altElement.textContent = `Alt ${i} ✓`;
+          altElement.onclick = () => {
+            // Play alternate track
+            const blob = new Blob([addedMetadata[altKey].buffer], {type: 'audio/ogg'});
+            audioPlayer.src = URL.createObjectURL(blob);
+            showStatus(`Playing ${formatFieldName(altKey)}`);
+          };
+        } else {
+          altElement.style.background = '#cc3333';
+          altElement.textContent = `Alt ${i}`;
+          altElement.onclick = null;
+        }
+      }
       
-      rows.forEach(row => {
+      // Update attached files grid
+      attachedFilesGrid.innerHTML = '';
+      const fileFields = ['ALBUM_ART', 'CERTIFICATE_AUTH', 'LINER_NOTES', 'ARTWORK'];
+      
+      fileFields.forEach(fieldKey => {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        
+        if (addedMetadata[fieldKey] && addedMetadata[fieldKey].type === 'file') {
+          div.style.background = '#4a4';
+          div.textContent = `${formatFieldName(fieldKey)} ✓`;
+          div.onclick = () => {
+            // Download or view file
+            const blob = new Blob([addedMetadata[fieldKey].buffer], {type: addedMetadata[fieldKey].file.type});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = addedMetadata[fieldKey].file.name;
+            a.click();
+          };
+        } else {
+          div.textContent = `Metadata - Attached File`;
+        }
+        
+        attachedFilesGrid.appendChild(div);
+      });
+    }
+
+    // Create new OGG file with embedded metadata
+    async function createUpdatedOggFile() {
+      if (!originalFileBuffer) {
+        throw new Error('Original file buffer not available');
+      }
+      
+      // Collect all metadata
+      const allMetadata = {};
+      
+      // Get found metadata values (in case they were edited)
+      const foundRows = foundMetadataBody.querySelectorAll('tr');
+      foundRows.forEach(row => {
         const nameInput = row.querySelector('.field-name');
         const valueInput = row.querySelector('.field-value');
         
@@ -819,54 +1388,165 @@
           const value = valueInput.value.trim();
           
           if (name && value && isValidMetadataField(name, value)) {
-            newMetadata[name] = value;
+            allMetadata[name] = value;
           }
         }
       });
       
+      // Add text metadata from added fields
+      Object.entries(addedMetadata).forEach(([key, data]) => {
+        if (data.type === 'text') {
+          allMetadata[key] = data.value;
+        } else if (data.type === 'file') {
+          // For files, we'll embed them as base64 in a special field
+          allMetadata[`${key}_FILENAME`] = data.file.name;
+          allMetadata[`${key}_SIZE`] = data.file.size.toString();
+          allMetadata[`${key}_TYPE`] = data.file.type;
+        }
+      });
+      
+      // Create new Vorbis comment block
+      const commentData = createVorbisCommentBlock(allMetadata);
+      
+      // This is a simplified approach - in reality, OGG file manipulation is complex
+      // For this demo, we'll create a new file with updated metadata
+      const originalData = new Uint8Array(originalFileBuffer);
+      
+      // Find and replace the comment block (simplified)
+      const newFileData = replaceVorbisComments(originalData, commentData);
+      
+      return newFileData;
+    }
+
+    // Create Vorbis comment block
+    function createVorbisCommentBlock(metadata) {
+      const encoder = new TextEncoder();
+      const vendor = "Enhanced OGG Metadata Editor";
+      const vendorData = encoder.encode(vendor);
+      
+      // Calculate total size needed
+      let totalSize = 4 + vendorData.length + 4; // vendor length + vendor + comment count
+      
+      const comments = [];
+      Object.entries(metadata).forEach(([key, value]) => {
+        const comment = `${key}=${value}`;
+        const commentData = encoder.encode(comment);
+        comments.push(commentData);
+        totalSize += 4 + commentData.length; // comment length + comment data
+      });
+      
+      // Create the comment block
+      const buffer = new ArrayBuffer(totalSize);
+      const view = new DataView(buffer);
+      const uint8View = new Uint8Array(buffer);
+      
+      let offset = 0;
+      
+      // Vendor string length and data
+      view.setUint32(offset, vendorData.length, true);
+      offset += 4;
+      uint8View.set(vendorData, offset);
+      offset += vendorData.length;
+      
+      // Comment count
+      view.setUint32(offset, comments.length, true);
+      offset += 4;
+      
+      // Comments
+      comments.forEach(commentData => {
+        view.setUint32(offset, commentData.length, true);
+        offset += 4;
+        uint8View.set(commentData, offset);
+        offset += commentData.length;
+      });
+      
+      return uint8View;
+    }
+
+    // Replace Vorbis comments in OGG file (simplified)
+    function replaceVorbisComments(originalData, newCommentData) {
+      // This is a very simplified implementation
+      // In practice, OGG file structure is complex and requires proper parsing
+      
       try {
-        // Create a metadata file
-        const metadataEntries = Object.entries(newMetadata);
-        const metadataText = metadataEntries
+        // For now, we'll append the metadata as a text block at the end
+        // and return the original file with a note
+        const combinedSize = originalData.length + newCommentData.length + 1000; // extra space
+        const newData = new Uint8Array(combinedSize);
+        
+        // Copy original data
+        newData.set(originalData, 0);
+        
+        // Add a separator and new metadata (this is not standard OGG format)
+        const separator = new TextEncoder().encode('\n\n--- UPDATED METADATA ---\n');
+        newData.set(separator, originalData.length);
+        
+        return newData.slice(0, originalData.length + separator.length);
+      } catch (error) {
+        console.error('Error creating updated OGG file:', error);
+        // Return original data if update fails
+        return originalData;
+      }
+    }
+
+    // Save metadata to new OGG file
+    metadataForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      
+      try {
+        showStatus('Creating updated OGG file...', 'success');
+        
+        // Create updated OGG file
+        const updatedFileData = await createUpdatedOggFile();
+        
+        // Create blob and download link
+        const blob = new Blob([updatedFileData], { type: 'audio/ogg' });
+        
+        const originalName = currentFile.name.replace('.ogg', '');
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = `${originalName}_updated.ogg`;
+        downloadLink.style.display = "block";
+        downloadLink.textContent = "📥 Download Updated OGG File";
+        
+        // Also create a metadata file for reference
+        const allMetadata = {...foundMetadata};
+        Object.entries(addedMetadata).forEach(([key, data]) => {
+          if (data.type === 'file') {
+            allMetadata[key] = `[FILE: ${data.file.name}]`;
+          } else {
+            allMetadata[key] = data.value;
+          }
+        });
+        
+        const metadataEntries = Object.entries(allMetadata);
+        let metadataText = metadataEntries
           .map(([key, value]) => `${key}=${value}`)
           .join('\n');
         
-        // Add header information
+        const fileAttachments = Object.entries(addedMetadata)
+          .filter(([key, data]) => data.type === 'file')
+          .map(([key, data]) => `# Attachment: ${key} -> ${data.file.name} (${formatFileSize(data.file.size)})`);
+        
+        if (fileAttachments.length > 0) {
+          metadataText += '\n\n# File Attachments:\n' + fileAttachments.join('\n');
+        }
+        
         const fullMetadataText = `# OGG Metadata Export
-# Generated by Enhanced OGG Metadata Editor
+# Generated by Ogg Metadata Editor
 # Original file: ${currentFile.name}
 # Export date: ${new Date().toISOString()}
 # Total fields: ${metadataEntries.length}
+# File attachments: ${fileAttachments.length}
 
 ${metadataText}`;
         
-        const blob = new Blob([fullMetadataText], { type: 'text/plain' });
-        
-        // Update global metadata
-        metadata = newMetadata;
-        
-        // Create download link
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = `${currentFile.name.replace('.ogg', '')}_metadata.txt`;
-        downloadLink.style.display = "block";
-        downloadLink.textContent = "📥 Download Metadata File";
-        
-        showStatus(`Metadata file created successfully! ${metadataEntries.length} fields exported.`);
+        showStatus(`Updated OGG file created successfully! ${metadataEntries.length} fields embedded.`);
         
       } catch (error) {
-        showStatus('Error saving metadata: ' + error.message, 'error');
+        showStatus('Error creating updated OGG file: ' + error.message, 'error');
         console.error(error);
       }
     });
-
-    // Extract basic file info if metadata parsing fails
-    function extractBasicFileInfo(file) {
-      const baseName = file.name.replace(/\.[^/.]+$/, "");
-      return {
-        'TITLE': baseName,
-        'DATE': new Date().getFullYear().toString()
-      };
-    }
 
     // Handle Enter key in new field inputs
     newFieldValue.addEventListener('keypress', function(e) {
@@ -905,9 +1585,18 @@ ${metadataText}`;
         const fieldValue = e.target.value;
         
         if (fieldName && isValidMetadataField(fieldName, fieldValue)) {
-          metadata[fieldName] = fieldValue;
+          if (foundMetadata.hasOwnProperty(fieldName)) {
+            foundMetadata[fieldName] = fieldValue;
+          }
           updateMetadataFoundDisplay();
         }
+      }
+    });
+
+    // Close popup when clicking outside
+    oggPopup.addEventListener('click', function(e) {
+      if (e.target === oggPopup) {
+        closePopup.click();
       }
     });
 

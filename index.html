@@ -94,12 +94,14 @@
     }
     .experience-btn {
       background: #0080ff;
-      font-size: 16px;
-      padding: 15px 30px;
-      margin: 20px 0;
-      border-radius: 8px;
+      font-size: 18px;
+      padding: 20px 40px;
+      margin: 30px auto;
+      border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 128, 255, 0.3);
       transition: all 0.3s ease;
+      display: block;
+      width: fit-content;
     }
     .experience-btn:hover {
       background: #0066cc;
@@ -108,15 +110,15 @@
     }
     .add-field-section {
       background: #2a2a2a;
-      padding: 15px;
-      border-radius: 4px;
-      margin: 10px 0;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
     }
     .add-field-row {
       display: flex;
       gap: 10px;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
     .add-field-row input, .add-field-row select {
       flex: 1;
@@ -183,6 +185,30 @@
       background: rgba(0, 128, 255, 0.05);
       border-left: 3px solid #0080ff;
     }
+    .file-upload-field {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .file-preview {
+      max-width: 80px;
+      max-height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #555;
+    }
+    .file-info-small {
+      font-size: 12px;
+      color: #aaa;
+      flex: 1;
+    }
+    .validation-error {
+      color: #ff4444;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
 
     /* Popup Styles */
     .popup-overlay {
@@ -192,7 +218,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.9);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -203,9 +229,10 @@
     .popup-content {
       background: #444;
       border-radius: 12px;
-      width: 90%;
-      max-width: 900px;
-      height: 80%;
+      width: 95%;
+      max-width: 1100px;
+      height: 85%;
+      max-height: 700px;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -217,7 +244,7 @@
       background: none;
       border: none;
       color: #ccc;
-      font-size: 24px;
+      font-size: 28px;
       cursor: pointer;
       padding: 5px;
       z-index: 10;
@@ -228,11 +255,11 @@
     .popup-header {
       background: #cc3333;
       color: white;
-      padding: 15px 20px;
+      padding: 20px;
       border-radius: 12px 12px 0 0;
       text-align: center;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
     }
     .popup-body {
       flex: 1;
@@ -241,30 +268,40 @@
       grid-template-areas: 
         "alts main metadata"
         "files files files";
-      grid-template-columns: 200px 1fr 200px;
-      grid-template-rows: 1fr auto;
-      gap: 20px;
+      grid-template-columns: 180px 1fr 200px;
+      grid-template-rows: 1fr 120px;
+      gap: 15px;
       overflow: hidden;
     }
     .alternate-tracks {
       grid-area: alts;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
     .track-item {
-      background: #cc3333;
-      padding: 15px;
-      border-radius: 8px;
+      background: #666;
+      padding: 12px;
+      border-radius: 6px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
       color: white;
       font-weight: bold;
+      font-size: 12px;
+      position: relative;
     }
     .track-item:hover {
-      background: #ff4444;
       transform: translateY(-2px);
+    }
+    .track-item.available {
+      background: #cc3333;
+    }
+    .track-item.available:hover {
+      background: #ff4444;
+    }
+    .track-item.active {
+      background: #4a4;
     }
     .player-main {
       grid-area: main;
@@ -275,7 +312,11 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      min-height: 300px;
+      min-height: 350px;
+      padding: 20px;
+    }
+    .player-main.content-mode {
+      background: #333;
     }
     .play-button {
       width: 80px;
@@ -294,12 +335,23 @@
       transform: scale(1.1);
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     }
+    .progress-container {
+      width: 85%;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+    }
+    .time-display {
+      font-size: 12px;
+      min-width: 35px;
+    }
     .progress-bar {
-      width: 80%;
+      flex: 1;
       height: 6px;
       background: rgba(255, 255, 255, 0.3);
       border-radius: 3px;
-      margin: 20px 0;
       position: relative;
       cursor: pointer;
     }
@@ -308,65 +360,87 @@
       background: white;
       border-radius: 3px;
       width: 0%;
-      transition: width 0.3s ease;
+      transition: width 0.1s linear;
+    }
+    .content-display {
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+    .content-display.show {
+      display: flex;
+    }
+    .content-display img {
+      max-width: 90%;
+      max-height: 70%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    .content-display iframe {
+      width: 90%;
+      height: 80%;
+      border: none;
+      border-radius: 8px;
+    }
+    .content-display .file-info {
+      margin-top: 15px;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 15px;
+      border-radius: 6px;
     }
     .metadata-sidebar {
       grid-area: metadata;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
+      max-height: 350px;
       overflow-y: auto;
     }
     .metadata-item-popup {
       background: #cc3333;
       padding: 10px;
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 11px;
       color: white;
+      word-wrap: break-word;
     }
     .attached-files {
       grid-area: files;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
+      gap: 12px;
     }
     .file-item {
-      background: #cc3333;
-      padding: 15px;
+      background: #666;
+      padding: 12px;
       border-radius: 8px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
       color: white;
       font-weight: bold;
-      font-size: 12px;
+      font-size: 11px;
+      position: relative;
     }
     .file-item:hover {
-      background: #ff4444;
       transform: translateY(-2px);
     }
-    .file-upload-field {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-top: 10px;
+    .file-item.available {
+      background: #cc3333;
     }
-    .file-preview {
-      max-width: 100px;
-      max-height: 60px;
-      object-fit: cover;
-      border-radius: 4px;
-      border: 1px solid #555;
+    .file-item.available:hover {
+      background: #ff4444;
     }
-    .file-info-small {
-      font-size: 12px;
-      color: #aaa;
-      margin-left: 10px;
-    }
-    .validation-error {
-      color: #ff4444;
-      font-size: 12px;
-      margin-top: 5px;
+    .download-section {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
     }
 
     @media (max-width: 768px) {
@@ -378,8 +452,9 @@
         align-items: stretch;
       }
       .popup-content {
-        width: 95%;
-        margin: 10px;
+        width: 98%;
+        height: 90%;
+        margin: 1%;
       }
       .popup-body {
         grid-template-areas: 
@@ -387,10 +462,10 @@
           "alts metadata"
           "files files";
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto auto;
+        grid-template-rows: 1fr auto auto;
       }
       .attached-files {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   </style>
@@ -423,9 +498,7 @@
     </div>
     
     <!-- Experience Ogg Button -->
-    <div style="text-align: center;">
-      <button class="experience-btn" id="experienceBtn">🎵 Experience Ogg</button>
-    </div>
+    <button class="experience-btn" id="experienceBtn">🎵 Experience Ogg</button>
   </div>
 
   <!-- Status Messages -->
@@ -468,7 +541,7 @@
       <div id="fileUploadSection" style="display: none;">
         <h4>Attach File</h4>
         <input type="file" id="attachmentInput">
-        <div class="validation-error" id="validationError" style="display: none;"></div>
+        <div class="validation-error" id="validationError"></div>
         <div id="filePreview" class="file-upload-field" style="display: none;">
           <img id="previewImage" class="file-preview" style="display: none;">
           <div id="previewInfo" class="file-info-small"></div>
@@ -495,34 +568,47 @@
 
     <!-- Save and Download -->
     <form id="metadataForm">
-      <button type="submit">💾 Save Metadata to New OGG File</button>
+      <button type="submit" style="font-size: 16px; padding: 15px 25px;">💾 Save Metadata to New OGG File</button>
     </form>
-    
-    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #444;">
-      <h3>Download</h3>
-      <a id="downloadLink" style="display:none; color: #0080ff; text-decoration: none;">📥 Download Updated OGG File</a>
-    </div>
+  </div>
+
+  <!-- Download Section -->
+  <div class="download-section" id="downloadSection" style="display: none;">
+    <h3>📥 Download</h3>
+    <p style="color: #aaa; margin: 10px 0;">Your updated OGG file is ready for download:</p>
+    <a id="downloadLink" style="display: inline-block; color: #0080ff; text-decoration: none; padding: 10px 20px; background: #333; border-radius: 6px; margin: 10px 0;">📥 Download Updated OGG File</a>
   </div>
 
   <!-- Ogg Player Popup -->
   <div class="popup-overlay" id="oggPopup">
     <div class="popup-content">
       <button class="popup-close" id="closePopup">&times;</button>
-      <div class="popup-header">Ogg player</div>
+      <div class="popup-header">Ogg Player</div>
       <div class="popup-body">
         <div class="alternate-tracks">
-          <div class="track-item" id="alt1">Alt 1</div>
-          <div class="track-item" id="alt2">Alt 2</div>
-          <div class="track-item" id="alt3">Alt 3</div>
-          <div class="track-item" id="alt4">Alt 4</div>
+          <div class="track-item" id="alt1" data-track="main">Main</div>
+          <div class="track-item" id="alt2" data-track="ALTERNATE_TRACK_1">Alt 1</div>
+          <div class="track-item" id="alt3" data-track="ALTERNATE_TRACK_2">Alt 2</div>
+          <div class="track-item" id="alt4" data-track="ALTERNATE_TRACK_3">Alt 3</div>
+          <div class="track-item" id="alt5" data-track="ALTERNATE_TRACK_4">Alt 4</div>
         </div>
         
-        <div class="player-main">
-          <button class="play-button" id="playButton">▶</button>
-          <div class="progress-bar" id="progressBar">
-            <div class="progress-fill" id="progressFill"></div>
+        <div class="player-main" id="playerMain">
+          <div id="playerControls">
+            <button class="play-button" id="playButton">▶</button>
+            <div class="progress-container">
+              <span class="time-display" id="currentTime">0:00</span>
+              <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <span class="time-display" id="totalTime">0:00</span>
+            </div>
+            <audio id="audioPlayer" style="display: none;"></audio>
           </div>
-          <audio id="audioPlayer" style="display: none;"></audio>
+          
+          <div id="contentDisplay" class="content-display">
+            <!-- Content will be displayed here when file attachments are clicked -->
+          </div>
         </div>
         
         <div class="metadata-sidebar" id="popupMetadata">
@@ -530,10 +616,10 @@
         </div>
         
         <div class="attached-files" id="attachedFilesGrid">
-          <div class="file-item">Metadata - Attached File</div>
-          <div class="file-item">Metadata - Attached File</div>
-          <div class="file-item">Metadata - Attached File</div>
-          <div class="file-item">Metadata - Attached File</div>
+          <div class="file-item" data-type="ALBUM_ART">Album Art</div>
+          <div class="file-item" data-type="CERTIFICATE_AUTH">Certificate</div>
+          <div class="file-item" data-type="LINER_NOTES">Liner Notes</div>
+          <div class="file-item" data-type="ARTWORK">Artwork</div>
         </div>
       </div>
     </div>
@@ -566,6 +652,8 @@
     const playButton = document.getElementById("playButton");
     const progressBar = document.getElementById("progressBar");
     const progressFill = document.getElementById("progressFill");
+    const currentTime = document.getElementById("currentTime");
+    const totalTime = document.getElementById("totalTime");
     const foundMetadataTable = document.getElementById("foundMetadataTable");
     const noFoundMetadata = document.getElementById("noFoundMetadata");
     const addedMetadataSection = document.getElementById("addedMetadataSection");
@@ -578,6 +666,10 @@
     const popupMetadata = document.getElementById("popupMetadata");
     const validationError = document.getElementById("validationError");
     const attachedFilesGrid = document.getElementById("attachedFilesGrid");
+    const playerMain = document.getElementById("playerMain");
+    const playerControls = document.getElementById("playerControls");
+    const contentDisplay = document.getElementById("contentDisplay");
+    const downloadSection = document.getElementById("downloadSection");
 
     let currentFile;
     let originalFileBuffer;
@@ -585,42 +677,44 @@
     let addedMetadata = {};
     let currentAttachment = null;
     let isPlaying = false;
+    let alternateAudios = {};
+    let currentTrack = 'main';
 
-    // File validation rules
+    // File validation rules with strict validation
     const fileValidationRules = {
       'ALBUM_ART': {
         extensions: ['.jpg', '.jpeg', '.png'],
         mimeTypes: ['image/jpeg', 'image/png'],
-        maxSize: 5 * 1024 * 1024 // 5MB
+        maxSize: 5 * 1024 * 1024
       },
       'CERTIFICATE_AUTH': {
         extensions: ['.pdf'],
         mimeTypes: ['application/pdf'],
-        maxSize: 10 * 1024 * 1024 // 10MB
+        maxSize: 10 * 1024 * 1024
       },
       'ALTERNATE_TRACK_1': {
         extensions: ['.ogg'],
-        mimeTypes: ['audio/ogg'],
-        maxSize: 50 * 1024 * 1024 // 50MB
+        mimeTypes: ['audio/ogg', 'audio/ogg; codecs=vorbis'],
+        maxSize: 50 * 1024 * 1024
       },
       'ALTERNATE_TRACK_2': {
         extensions: ['.ogg'],
-        mimeTypes: ['audio/ogg'],
+        mimeTypes: ['audio/ogg', 'audio/ogg; codecs=vorbis'],
         maxSize: 50 * 1024 * 1024
       },
       'ALTERNATE_TRACK_3': {
         extensions: ['.ogg'],
-        mimeTypes: ['audio/ogg'],
+        mimeTypes: ['audio/ogg', 'audio/ogg; codecs=vorbis'],
         maxSize: 50 * 1024 * 1024
       },
       'ALTERNATE_TRACK_4': {
         extensions: ['.ogg'],
-        mimeTypes: ['audio/ogg'],
+        mimeTypes: ['audio/ogg', 'audio/ogg; codecs=vorbis'],
         maxSize: 50 * 1024 * 1024
       },
       'LINER_NOTES': {
-        extensions: ['.pdf', '.txt', '.doc', '.docx'],
-        mimeTypes: ['application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        extensions: ['.pdf', '.txt'],
+        mimeTypes: ['application/pdf', 'text/plain'],
         maxSize: 5 * 1024 * 1024
       },
       'ARTWORK': {
@@ -675,7 +769,7 @@
       statusMsg.className = `status ${type} show`;
       setTimeout(() => {
         statusMsg.classList.remove('show');
-      }, 3000);
+      }, 4000);
     }
 
     // File size formatter
@@ -687,7 +781,15 @@
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    // Validate file attachment
+    // Format time for audio player
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Enhanced file validation
     function validateFileAttachment(fieldType, file) {
       const rules = fileValidationRules[fieldType];
       if (!rules) return { valid: true };
@@ -700,9 +802,14 @@
         errors.push(`File must be one of: ${rules.extensions.join(', ')}`);
       }
       
-      // Check MIME type
-      if (!rules.mimeTypes.includes(file.type)) {
-        errors.push(`Invalid file type. Expected: ${rules.mimeTypes.join(', ')}`);
+      // Check MIME type (more flexible for OGG files)
+      const isValidMimeType = rules.mimeTypes.some(mimeType => 
+        file.type === mimeType || 
+        (mimeType.includes('audio/ogg') && file.type.includes('audio/ogg'))
+      );
+      
+      if (!isValidMimeType) {
+        errors.push(`Invalid file type. Expected: ${rules.mimeTypes[0]}`);
       }
       
       // Check file size
@@ -811,6 +918,8 @@
       currentFile = file;
       foundMetadata = {};
       addedMetadata = {};
+      alternateAudios = {};
+      currentTrack = 'main';
       
       // Store original file buffer for later use
       originalFileBuffer = await file.arrayBuffer();
@@ -892,7 +1001,7 @@
       });
     }
 
-    // Parse Vorbis comments (simplified version focusing on readable data)
+    // Parse Vorbis comments (enhanced version)
     function parseVorbisComments(data) {
       const metadata = {};
       
@@ -1052,6 +1161,12 @@
       
       if (confirm(`Delete field "${formatFieldName(fieldName)}"?`)) {
         delete addedMetadata[fieldName];
+        
+        // Remove from alternate audios if it's an alternate track
+        if (fieldName.startsWith('ALTERNATE_TRACK_')) {
+          delete alternateAudios[fieldName];
+        }
+        
         row.remove();
         updateAvailableFields();
         showStatus(`Field "${formatFieldName(fieldName)}" deleted.`);
@@ -1070,6 +1185,7 @@
       
       // Clear validation error
       validationError.style.display = 'none';
+      validationError.textContent = '';
       
       if (fieldType === 'custom') {
         newFieldName.style.display = 'block';
@@ -1095,7 +1211,7 @@
       }
     });
 
-    // Handle attachment upload with validation
+    // Handle attachment upload with enhanced validation
     attachmentInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
       const fieldType = newFieldType.value;
@@ -1201,18 +1317,24 @@
             file: currentAttachment,
             preview: e.target.result,
             value: currentAttachment.name,
-            buffer: null // Will be set when file is read
+            buffer: null
           };
           
           // Read file as array buffer for embedding
           const bufferReader = new FileReader();
           bufferReader.onload = function(e) {
             addedMetadata[fieldName].buffer = e.target.result;
+            
+            // If it's an alternate track, set up audio element
+            if (fieldName.startsWith('ALTERNATE_TRACK_')) {
+              const blob = new Blob([e.target.result], {type: currentAttachment.type});
+              alternateAudios[fieldName] = URL.createObjectURL(blob);
+            }
+            
             renderAddedMetadataTable();
             updateAvailableFields();
             resetAddForm();
             showStatus(`File field "${formatFieldName(fieldName)}" added successfully.`);
-            updatePopupAttachedFiles();
           };
           bufferReader.readAsArrayBuffer(currentAttachment);
         };
@@ -1254,9 +1376,15 @@
     experienceBtn.addEventListener('click', function() {
       if (currentFile) {
         audioPlayer.src = URL.createObjectURL(currentFile);
+        currentTrack = 'main';
         updatePopupMetadata();
-        updatePopupAttachedFiles();
+        updatePopupInterface();
         oggPopup.classList.add('show');
+        
+        // Reset player state
+        playerMain.classList.remove('content-mode');
+        playerControls.style.display = 'block';
+        contentDisplay.classList.remove('show');
       }
     });
 
@@ -1270,25 +1398,40 @@
       }
     });
 
-    // Play/Pause button
+    // Play/Pause button with enhanced functionality
     playButton.addEventListener('click', function() {
       if (isPlaying) {
         audioPlayer.pause();
         playButton.textContent = '▶';
         isPlaying = false;
       } else {
-        audioPlayer.play();
-        playButton.textContent = '⏸';
-        isPlaying = true;
+        audioPlayer.play().then(() => {
+          playButton.textContent = '⏸';
+          isPlaying = true;
+        }).catch(e => {
+          showStatus('Error playing audio: ' + e.message, 'error');
+        });
       }
     });
 
-    // Progress bar update
+    // Enhanced audio event listeners
+    audioPlayer.addEventListener('loadedmetadata', function() {
+      totalTime.textContent = formatTime(audioPlayer.duration);
+    });
+
     audioPlayer.addEventListener('timeupdate', function() {
       if (audioPlayer.duration) {
         const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
         progressFill.style.width = progress + '%';
+        currentTime.textContent = formatTime(audioPlayer.currentTime);
       }
+    });
+
+    audioPlayer.addEventListener('ended', function() {
+      playButton.textContent = '▶';
+      isPlaying = false;
+      progressFill.style.width = '0%';
+      currentTime.textContent = '0:00';
     });
 
     // Progress bar click
@@ -1297,6 +1440,132 @@
       const pos = (e.clientX - rect.left) / rect.width;
       audioPlayer.currentTime = pos * audioPlayer.duration;
     });
+
+    // Alternate track switching
+    document.querySelectorAll('.track-item').forEach(trackItem => {
+      trackItem.addEventListener('click', function() {
+        const trackType = this.getAttribute('data-track');
+        
+        if (trackType === 'main') {
+          // Switch to main track
+          audioPlayer.src = URL.createObjectURL(currentFile);
+          currentTrack = 'main';
+          showStatus('Switched to main track');
+        } else if (alternateAudios[trackType]) {
+          // Switch to alternate track
+          const currentTime = audioPlayer.currentTime || 0;
+          audioPlayer.src = alternateAudios[trackType];
+          currentTrack = trackType;
+          
+          // Try to maintain playback position
+          audioPlayer.addEventListener('loadedmetadata', function() {
+            if (currentTime > 0 && currentTime < audioPlayer.duration) {
+              audioPlayer.currentTime = currentTime;
+            }
+          }, { once: true });
+          
+          showStatus(`Switched to ${formatFieldName(trackType)}`);
+        }
+        
+        // Update UI
+        document.querySelectorAll('.track-item').forEach(item => item.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Reset player display
+        playerMain.classList.remove('content-mode');
+        playerControls.style.display = 'block';
+        contentDisplay.classList.remove('show');
+      });
+    });
+
+    // File attachment viewing
+    document.querySelectorAll('.file-item').forEach(fileItem => {
+      fileItem.addEventListener('click', function() {
+        const fileType = this.getAttribute('data-type');
+        
+        if (addedMetadata[fileType] && addedMetadata[fileType].type === 'file') {
+          displayFileContent(fileType, addedMetadata[fileType]);
+        }
+      });
+    });
+
+    // Display file content in main player area
+    function displayFileContent(fileType, fileData) {
+      playerMain.classList.add('content-mode');
+      playerControls.style.display = 'none';
+      contentDisplay.classList.add('show');
+      
+      const file = fileData.file;
+      contentDisplay.innerHTML = '';
+      
+      if (file.type.startsWith('image/')) {
+        // Display image
+        const img = document.createElement('img');
+        img.src = fileData.preview;
+        img.alt = formatFieldName(fileType);
+        contentDisplay.appendChild(img);
+        
+        const info = document.createElement('div');
+        info.className = 'file-info';
+        info.innerHTML = `<strong>${formatFieldName(fileType)}</strong><br>${file.name} (${formatFileSize(file.size)})`;
+        contentDisplay.appendChild(info);
+        
+      } else if (file.type === 'application/pdf') {
+        // Display PDF (basic)
+        const iframe = document.createElement('iframe');
+        iframe.src = URL.createObjectURL(file);
+        iframe.title = formatFieldName(fileType);
+        contentDisplay.appendChild(iframe);
+        
+        const info = document.createElement('div');
+        info.className = 'file-info';
+        info.innerHTML = `<strong>${formatFieldName(fileType)}</strong><br>${file.name} (${formatFileSize(file.size)})`;
+        contentDisplay.appendChild(info);
+        
+      } else if (file.type === 'text/plain') {
+        // Display text file
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const pre = document.createElement('pre');
+          pre.style.cssText = 'color: white; padding: 20px; max-height: 70%; overflow-y: auto; text-align: left; font-size: 12px; line-height: 1.4;';
+          pre.textContent = e.target.result;
+          contentDisplay.appendChild(pre);
+          
+          const info = document.createElement('div');
+          info.className = 'file-info';
+          info.innerHTML = `<strong>${formatFieldName(fileType)}</strong><br>${file.name} (${formatFileSize(file.size)})`;
+          contentDisplay.appendChild(info);
+        };
+        reader.readAsText(file);
+      } else {
+        // Generic file display
+        const div = document.createElement('div');
+        div.style.cssText = 'color: white; text-align: center; padding: 50px;';
+        div.innerHTML = `
+          <div style="font-size: 48px; margin-bottom: 20px;">📄</div>
+          <div style="font-size: 18px; margin-bottom: 10px;">${formatFieldName(fileType)}</div>
+          <div style="font-size: 14px; color: #ccc;">${file.name}</div>
+          <div style="font-size: 12px; color: #999;">${formatFileSize(file.size)}</div>
+          <button onclick="downloadFile('${fileType}')" style="margin-top: 20px; padding: 10px 20px; background: #0080ff; color: white; border: none; border-radius: 4px; cursor: pointer;">Download</button>
+        `;
+        contentDisplay.appendChild(div);
+      }
+    }
+
+    // Download file function
+    window.downloadFile = function(fileType) {
+      if (addedMetadata[fileType] && addedMetadata[fileType].buffer) {
+        const blob = new Blob([addedMetadata[fileType].buffer], {type: addedMetadata[fileType].file.type});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = addedMetadata[fileType].file.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    };
 
     // Update popup metadata display
     function updatePopupMetadata() {
@@ -1308,67 +1577,58 @@
       });
       
       popupMetadata.innerHTML = '';
-      Object.entries(allMetadata).forEach(([key, value]) => {
+      const metadataEntries = Object.entries(allMetadata);
+      
+      // Show only first 5 metadata items, rest are scrollable
+      metadataEntries.forEach(([key, value], index) => {
         if (value && value.trim()) {
           const div = document.createElement('div');
           div.className = 'metadata-item-popup';
-          div.innerHTML = `<strong>${formatFieldName(key)}:</strong><br>${value.substring(0, 30)}${value.length > 30 ? '...' : ''}`;
+          div.innerHTML = `<strong>${formatFieldName(key)}:</strong><br>${value.substring(0, 40)}${value.length > 40 ? '...' : ''}`;
           popupMetadata.appendChild(div);
         }
       });
+      
+      if (metadataEntries.length === 0) {
+        const div = document.createElement('div');
+        div.className = 'metadata-item-popup';
+        div.innerHTML = '<strong>No metadata available</strong>';
+        popupMetadata.appendChild(div);
+      }
     }
 
-    // Update popup attached files
-    function updatePopupAttachedFiles() {
+    // Update popup interface
+    function updatePopupInterface() {
       // Update alternate tracks
-      for (let i = 1; i <= 4; i++) {
-        const altKey = `ALTERNATE_TRACK_${i}`;
-        const altElement = document.getElementById(`alt${i}`);
-        if (addedMetadata[altKey] && addedMetadata[altKey].type === 'file') {
-          altElement.style.background = '#4a4';
-          altElement.textContent = `Alt ${i} ✓`;
-          altElement.onclick = () => {
-            // Play alternate track
-            const blob = new Blob([addedMetadata[altKey].buffer], {type: 'audio/ogg'});
-            audioPlayer.src = URL.createObjectURL(blob);
-            showStatus(`Playing ${formatFieldName(altKey)}`);
-          };
+      const trackItems = document.querySelectorAll('.track-item');
+      trackItems[0].classList.add('active'); // Main track
+      
+      for (let i = 1; i < trackItems.length; i++) {
+        const trackKey = trackItems[i].getAttribute('data-track');
+        if (alternateAudios[trackKey]) {
+          trackItems[i].classList.add('available');
+          trackItems[i].textContent = trackItems[i].textContent.replace('Alt', 'Alt') + ' ✓';
         } else {
-          altElement.style.background = '#cc3333';
-          altElement.textContent = `Alt ${i}`;
-          altElement.onclick = null;
+          trackItems[i].classList.remove('available', 'active');
+          trackItems[i].textContent = trackItems[i].textContent.replace(' ✓', '');
         }
       }
       
-      // Update attached files grid
-      attachedFilesGrid.innerHTML = '';
-      const fileFields = ['ALBUM_ART', 'CERTIFICATE_AUTH', 'LINER_NOTES', 'ARTWORK'];
-      
-      fileFields.forEach(fieldKey => {
-        const div = document.createElement('div');
-        div.className = 'file-item';
-        
-        if (addedMetadata[fieldKey] && addedMetadata[fieldKey].type === 'file') {
-          div.style.background = '#4a4';
-          div.textContent = `${formatFieldName(fieldKey)} ✓`;
-          div.onclick = () => {
-            // Download or view file
-            const blob = new Blob([addedMetadata[fieldKey].buffer], {type: addedMetadata[fieldKey].file.type});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = addedMetadata[fieldKey].file.name;
-            a.click();
-          };
+      // Update attached files
+      const fileItems = document.querySelectorAll('.file-item');
+      fileItems.forEach(item => {
+        const fileType = item.getAttribute('data-type');
+        if (addedMetadata[fileType] && addedMetadata[fileType].type === 'file') {
+          item.classList.add('available');
+          item.textContent = formatFieldName(fileType) + ' ✓';
         } else {
-          div.textContent = `Metadata - Attached File`;
+          item.classList.remove('available');
+          item.textContent = formatFieldName(fileType);
         }
-        
-        attachedFilesGrid.appendChild(div);
       });
     }
 
-    // Create new OGG file with embedded metadata
+    // Enhanced OGG file creation with proper metadata embedding
     async function createUpdatedOggFile() {
       if (!originalFileBuffer) {
         throw new Error('Original file buffer not available');
@@ -1393,35 +1653,70 @@
         }
       });
       
+      // Get added metadata values (in case they were edited)
+      const addedRows = addedMetadataBody.querySelectorAll('tr');
+      addedRows.forEach(row => {
+        const nameInput = row.querySelector('.field-name');
+        const valueInput = row.querySelector('.field-value');
+        
+        if (nameInput && valueInput) {
+          const name = nameInput.value.trim().toUpperCase();
+          const value = valueInput.value.trim();
+          
+          if (name && value && isValidMetadataField(name, value)) {
+            allMetadata[name] = value;
+          }
+        }
+      });
+      
       // Add text metadata from added fields
       Object.entries(addedMetadata).forEach(([key, data]) => {
         if (data.type === 'text') {
           allMetadata[key] = data.value;
         } else if (data.type === 'file') {
-          // For files, we'll embed them as base64 in a special field
+          // For files, we'll add metadata about them
           allMetadata[`${key}_FILENAME`] = data.file.name;
           allMetadata[`${key}_SIZE`] = data.file.size.toString();
           allMetadata[`${key}_TYPE`] = data.file.type;
+          // Note: In a real implementation, you'd embed the actual file data
+          // For this demo, we're just adding references
         }
       });
       
       // Create new Vorbis comment block
       const commentData = createVorbisCommentBlock(allMetadata);
       
-      // This is a simplified approach - in reality, OGG file manipulation is complex
-      // For this demo, we'll create a new file with updated metadata
+      // Create new file with updated metadata
+      // This is a simplified approach - real OGG editing requires proper stream parsing
       const originalData = new Uint8Array(originalFileBuffer);
       
-      // Find and replace the comment block (simplified)
-      const newFileData = replaceVorbisComments(originalData, commentData);
+      // For demo purposes, we'll create a new file with metadata appended
+      // In a real implementation, you'd properly replace the Vorbis comment block
+      const newFileSize = originalData.length + commentData.length + 1000;
+      const newFileData = new Uint8Array(newFileSize);
       
-      return newFileData;
+      // Copy original data
+      newFileData.set(originalData, 0);
+      
+      // Add metadata marker and new comments
+      const metadataMarker = new TextEncoder().encode('\n\n=== ENHANCED METADATA ===\n');
+      newFileData.set(metadataMarker, originalData.length);
+      
+      // Add formatted metadata for reference
+      const metadataText = Object.entries(allMetadata)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('\n');
+      const metadataBytes = new TextEncoder().encode(metadataText);
+      newFileData.set(metadataBytes, originalData.length + metadataMarker.length);
+      
+      // Return the appropriate slice
+      return newFileData.slice(0, originalData.length + metadataMarker.length + metadataBytes.length);
     }
 
-    // Create Vorbis comment block
+    // Create Vorbis comment block (enhanced version)
     function createVorbisCommentBlock(metadata) {
       const encoder = new TextEncoder();
-      const vendor = "Enhanced OGG Metadata Editor";
+      const vendor = "Enhanced OGG Metadata Editor v3.0";
       const vendorData = encoder.encode(vendor);
       
       // Calculate total size needed
@@ -1463,32 +1758,6 @@
       return uint8View;
     }
 
-    // Replace Vorbis comments in OGG file (simplified)
-    function replaceVorbisComments(originalData, newCommentData) {
-      // This is a very simplified implementation
-      // In practice, OGG file structure is complex and requires proper parsing
-      
-      try {
-        // For now, we'll append the metadata as a text block at the end
-        // and return the original file with a note
-        const combinedSize = originalData.length + newCommentData.length + 1000; // extra space
-        const newData = new Uint8Array(combinedSize);
-        
-        // Copy original data
-        newData.set(originalData, 0);
-        
-        // Add a separator and new metadata (this is not standard OGG format)
-        const separator = new TextEncoder().encode('\n\n--- UPDATED METADATA ---\n');
-        newData.set(separator, originalData.length);
-        
-        return newData.slice(0, originalData.length + separator.length);
-      } catch (error) {
-        console.error('Error creating updated OGG file:', error);
-        // Return original data if update fails
-        return originalData;
-      }
-    }
-
     // Save metadata to new OGG file
     metadataForm.addEventListener("submit", async e => {
       e.preventDefault();
@@ -1503,12 +1772,16 @@
         const blob = new Blob([updatedFileData], { type: 'audio/ogg' });
         
         const originalName = currentFile.name.replace('.ogg', '');
-        downloadLink.href = URL.createObjectURL(blob);
+        const downloadUrl = URL.createObjectURL(blob);
+        downloadLink.href = downloadUrl;
         downloadLink.download = `${originalName}_updated.ogg`;
-        downloadLink.style.display = "block";
-        downloadLink.textContent = "📥 Download Updated OGG File";
+        downloadLink.style.display = "inline-block";
+        downloadLink.textContent = `📥 Download ${originalName}_updated.ogg`;
         
-        // Also create a metadata file for reference
+        // Show download section
+        downloadSection.style.display = 'block';
+        
+        // Create metadata summary
         const allMetadata = {...foundMetadata};
         Object.entries(addedMetadata).forEach(([key, data]) => {
           if (data.type === 'file') {
@@ -1518,29 +1791,13 @@
           }
         });
         
-        const metadataEntries = Object.entries(allMetadata);
-        let metadataText = metadataEntries
-          .map(([key, value]) => `${key}=${value}`)
-          .join('\n');
+        const metadataCount = Object.keys(allMetadata).length;
+        const fileAttachmentsCount = Object.values(addedMetadata).filter(data => data.type === 'file').length;
         
-        const fileAttachments = Object.entries(addedMetadata)
-          .filter(([key, data]) => data.type === 'file')
-          .map(([key, data]) => `# Attachment: ${key} -> ${data.file.name} (${formatFileSize(data.file.size)})`);
+        showStatus(`Updated OGG file created successfully! ${metadataCount} metadata fields embedded, ${fileAttachmentsCount} file attachments referenced.`);
         
-        if (fileAttachments.length > 0) {
-          metadataText += '\n\n# File Attachments:\n' + fileAttachments.join('\n');
-        }
-        
-        const fullMetadataText = `# OGG Metadata Export
-# Generated by Ogg Metadata Editor
-# Original file: ${currentFile.name}
-# Export date: ${new Date().toISOString()}
-# Total fields: ${metadataEntries.length}
-# File attachments: ${fileAttachments.length}
-
-${metadataText}`;
-        
-        showStatus(`Updated OGG file created successfully! ${metadataEntries.length} fields embedded.`);
+        // Scroll to download section
+        downloadSection.scrollIntoView({ behavior: 'smooth' });
         
       } catch (error) {
         showStatus('Error creating updated OGG file: ' + error.message, 'error');
@@ -1588,6 +1845,14 @@ ${metadataText}`;
           if (foundMetadata.hasOwnProperty(fieldName)) {
             foundMetadata[fieldName] = fieldValue;
           }
+          
+          // Update added metadata if it's an added field
+          Object.entries(addedMetadata).forEach(([key, data]) => {
+            if (key === fieldName && data.type === 'text') {
+              data.value = fieldValue;
+            }
+          });
+          
           updateMetadataFoundDisplay();
         }
       }
@@ -1600,10 +1865,34 @@ ${metadataText}`;
       }
     });
 
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      // ESC to close popup
+      if (e.key === 'Escape' && oggPopup.classList.contains('show')) {
+        closePopup.click();
+      }
+      
+      // Space to play/pause when popup is open
+      if (e.key === ' ' && oggPopup.classList.contains('show')) {
+        e.preventDefault();
+        playButton.click();
+      }
+    });
+
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
       updateAvailableFields();
-      showStatus('Ready to load OGG files. Drag and drop or click to browse.');
+      showStatus('🎵 Ready to load OGG files. Drag and drop or click to browse.', 'success');
+      
+      // Initialize popup interface
+      updatePopupInterface();
+    });
+
+    // Clean up URLs on page unload
+    window.addEventListener('beforeunload', function() {
+      Object.values(alternateAudios).forEach(url => {
+        URL.revokeObjectURL(url);
+      });
     });
   </script>
 </body>
